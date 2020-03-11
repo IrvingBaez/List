@@ -1,4 +1,4 @@
-package com.example.list;
+package com.example.list.databaseAccess;
 
 import android.content.Context;
 
