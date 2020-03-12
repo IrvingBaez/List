@@ -18,10 +18,10 @@ public class ListElement implements Comparable{
     private Date date;
     private ArrayList<ListElement> elements = new ArrayList<>();
 
-    private static int currentId;
-    private static compareMode mode;
+    private static int currentId = 0;
+    private static compareMode mode = compareMode.CHRONOLOGICAL;
 
-    private enum compareMode {ALPHABETICAL, CHRONOLOGICAL, CUSTOM};
+    public enum compareMode {ALPHABETICAL, CHRONOLOGICAL, CUSTOM};
 
     /**
      * Method meant to be used when initializing elements from database.
@@ -85,6 +85,7 @@ public class ListElement implements Comparable{
     }
 
     public void addElement(ListElement element){
+        element.parentId = this.id;
         this.elements.add(element);
     }
 
@@ -97,7 +98,7 @@ public class ListElement implements Comparable{
             throw new AssertionError("Index is too large for current list.");
 
         int currentIndex = elements.indexOf(element);
-        Collections.rotate(this.elements.subList(newIndex, currentIndex), -1);
+        Collections.rotate(this.elements.subList(newIndex, currentIndex + 1), 1);
 
         for(int i = newIndex; i <= currentIndex; i++){
             this.elements.get(i).customIndex = i;
@@ -128,7 +129,19 @@ public class ListElement implements Comparable{
         return date;
     }
 
+    public ArrayList<ListElement> getElements() {
+        return elements;
+    }
+
     public static void setMode(compareMode mode) {
         ListElement.mode = mode;
+    }
+
+    @Override
+    public String toString() {
+        return "ListElement{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                '}';
     }
 }
