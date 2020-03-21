@@ -11,34 +11,37 @@ import java.util.Locale;
 
 public class ListElement implements Comparable{
     private int id;
-    private int parentId;
+    private ListElement parent;
     private String content;
     private boolean finished;
     private int customIndex;
     private Date date;
     private ArrayList<ListElement> elements = new ArrayList<>();
+    private ArrayList<ListElement> finishedElements = new ArrayList<>();
+    private ArrayList<ListElement> unfinishedElements = new ArrayList<>();
+
 
     private static int currentId = 0;
-    private static compareMode mode = compareMode.CHRONOLOGICAL;
+    private static compareMode mode = compareMode.CUSTOM;
 
-    public enum compareMode {ALPHABETICAL, CHRONOLOGICAL, CUSTOM};
+    public enum compareMode {ALPHABETICAL, CHRONOLOGICAL, CUSTOM}
 
     /**
      * Method meant to be used when initializing elements from database.
      *
      * @param id id as found in database.
-     * @param parentId id of parent in the database. Cannot be the same as id.
+     * @param parent parent in the database. Cannot be the same as id.
      * @param content content of the element to be displayed.
      * @param finished current state of the element. Either finished or not.
      * @param customIndex index used to replicate order defined by user.
      * @param date date the element was created.
      */
-    public ListElement(int id, int parentId, String content, int finished, int customIndex, String date) {
-        if(id == parentId)
-            throw new AssertionError("id (" + id + ") cannot be the same as parentID.");
+    public ListElement(int id, ListElement parent, String content, int finished, int customIndex, String date) {
+        if(this == parent)
+            return;
 
         this.id = id;
-        this.parentId = parentId;
+        this.parent = parent;
         this.content = content;
         this.customIndex = customIndex;
         this.finished = (finished == 1);
@@ -54,14 +57,14 @@ public class ListElement implements Comparable{
     /**
      * Method meant to be used to create elements on execution time.
      *
-     * @param parentId id of parent in the database. Cannot be the same as id.
+     * @param parent parent in the database. Cannot be the same as id.
      * @param content content of the element to be displayed.
      */
-    public ListElement(int parentId, String content, int customIndex) {
+    public ListElement(ListElement parent, String content) {
         this.id = ++ListElement.currentId;
-        this.parentId = parentId;
+        this.parent = parent;
         this.content = content;
-        this.customIndex = customIndex;
+        this.customIndex = parent.elements.size();
         this.finished = false;
         this.date = new Date();
     }
@@ -84,8 +87,21 @@ public class ListElement implements Comparable{
         return 0;
     }
 
+    public void sortElements(){
+        Collections.sort(this.elements);
+    }
+
+    public void divideElements(){
+        for (ListElement e:this.elements) {
+            if(e.finished)
+                this.finishedElements.add(e);
+            else
+                this.unfinishedElements.add(e);
+        }
+    }
+
     public void addElement(ListElement element){
-        element.parentId = this.id;
+        element.parent = this;
         this.elements.add(element);
     }
 
@@ -105,38 +121,43 @@ public class ListElement implements Comparable{
         }
     }
 
-    public int getId() {
+    public static void setMode(compareMode mode) {
+        ListElement.mode = mode;
+    }
+
+    public int getId(){
         return id;
     }
 
-    public int getParentId() {
-        return parentId;
+    public ListElement getParent(){
+        return parent;
     }
 
     public String getContent() {
         return content;
     }
 
-    public boolean isFinished() {
-        return finished;
-    }
-
-    public int getCustomIndex() {
-        return customIndex;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
     public ArrayList<ListElement> getElements() {
         return elements;
     }
 
-    public static void setMode(compareMode mode) {
-        ListElement.mode = mode;
+    public ArrayList<ListElement> getFinishedElements() {
+        return finishedElements;
     }
 
+    public ArrayList<ListElement> getUnfinishedElements() {
+        return unfinishedElements;
+    }
+
+    public boolean isEmpty(){
+        return this.elements.isEmpty();
+    }
+
+    public boolean isFinished() {
+        return finished;
+    }
+
+    @NonNull
     @Override
     public String toString() {
         return "ListElement{" +
