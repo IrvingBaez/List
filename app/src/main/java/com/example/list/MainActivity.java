@@ -4,28 +4,38 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckedTextView;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.list.databaseAccess.DatabaseAccess;
-import com.example.list.model.ListElement;
+import com.example.list.model.*;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private DatabaseAccess databaseAccess;
-    private ArrayList<ListElement> lists;
-    private ListElement displayed;
+    private ArrayList<List> lists;
+    private List displayedList;
     private TextView title;
     private LinearLayout container;
 
-    private View.OnClickListener button_click = new View.OnClickListener(){
+    private View.OnClickListener list_selection = new View.OnClickListener(){
         @Override
         public void onClick(View v) {
             Button sender = (Button)v;
-            ListElement selected = lists.get(sender.getId());
-            setDisplayed(selected);
+            List selected = lists.get(sender.getId());
+            setDisplayedList(selected);
+        }
+    };
+
+    private View.OnClickListener element_check = new View.OnClickListener() {
+        @Override
+        public void onClick(View sender) {
+            CheckBox c = (CheckBox) sender;
+            Element e = displayedList.getElements().get(c.getId());
+            e.setFinished(c.isChecked());
+            databaseAccess.updateElement(e);
         }
     };
 
@@ -36,52 +46,53 @@ public class MainActivity extends AppCompatActivity {
 
         this.title = findViewById(R.id.txt_title);
         this.container = findViewById(R.id.ll_container);
-        this.displayed = null;
+        this.displayedList = null;
         this.databaseAccess = DatabaseAccess.getInstance(getApplicationContext());
         loadLists();
     }
 
     private void loadLists(){
-        this.lists = databaseAccess.getFirstChildren();
-        displayed = null;
+        this.lists = databaseAccess.getLists();
+        displayedList = null;
         title.setText(R.string.listas_disponibles);
         container.removeAllViews();
 
-        for (ListElement element : this.lists){
+        for (List list : this.lists){
             Button button = new Button(this);
-            button.setText(element.getContent());
-            button.setId(this.lists.indexOf(element));
-            button.setOnClickListener(button_click);
+            button.setText(list.getTitle());
+            button.setId(this.lists.indexOf(list));
+            button.setOnClickListener(list_selection);
             container.addView(button);
         }
     }
 
-    private void setDisplayed(ListElement element){
+    private void setDisplayedList(List element){
         if(element == null){
             this.loadLists();
             return;
         }
 
-        displayed = element;
-        title.setText(displayed.getContent());
+        displayedList = element;
+        title.setText(displayedList.getTitle());
         container.removeAllViews();
 
-        if(displayed.isEmpty())
-            databaseAccess.setChildren(displayed);
+        if(displayedList.isEmpty())
+            databaseAccess.setChildren(displayedList);
 
-        for(ListElement child : displayed.getElements()){
-            Button button = new Button(this);
-            button.setText(child.getContent());
-            button.setId(lists.indexOf(child));
-            button.setOnClickListener(button_click);
-            container.addView(button);
+        for(Element child : displayedList.getElements()){
+            CheckBox box = new CheckBox(this);
+            box.setText(child.getContent());
+            box.setId(displayedList.getElements().indexOf(child));
+            box.setOnClickListener(element_check);
+            box.setChecked(child.isFinished());
+            container.addView(box);
         }
     }
 
     @Override
     public void onBackPressed(){
-        if(this.displayed != null) {
-            setDisplayed(displayed.getParent());
+        if(this.displayedList != null) {
+            setDisplayedList(null);
         }else{
             super.onBackPressed();
         }
