@@ -26,7 +26,7 @@ public class DatabaseAccess {
         return instance;
     }
 
-    public void open(){
+    private void open(){
         this.db = openHelper.getWritableDatabase();
     }
 
@@ -71,7 +71,7 @@ public class DatabaseAccess {
         return list;
     }
 
-    public void setChildren(List parent) {
+    public void setListChildren(List parent) {
         String selectQuery = "SELECT * FROM elements WHERE parent = " + parent.getId();
 
         try {
@@ -88,7 +88,7 @@ public class DatabaseAccess {
                         String description = cursor.getString(6);
 
                         Element element = new Element(id, parent, content, finished, customIndex,
-                                timeStamp, description);
+                                timeStamp, description, null);
                         parent.addElement(element);
                     } while (cursor.moveToNext());
                 }
@@ -109,6 +109,7 @@ public class DatabaseAccess {
     }
 
     public void updateElement (Element e) {
+        //The following attributes are never to be changed: id, parent, timestamp, parentElement.
         String selectQuery = "UPDATE elements SET content = ?, state = ?, " +
                 "customIndex = ?, description = ? WHERE id = ?;";
         String[] selectionArgs = new String[5];
@@ -135,8 +136,8 @@ public class DatabaseAccess {
     }
 
     public void insertElement (Element e){
-        String selectQuery = "INSERT INTO elements (content, parent, state, customIndex, description)\n" +
-                "VALUES (?, ?, ?, ?, ?);";
+        String selectQuery = "INSERT INTO elements (content, parent, state, customIndex, description, parentElement)\n" +
+                "VALUES (?, ?, ?, ?, ?, ?);";
         String[] selectionArgs = new String[5];
 
         selectionArgs[0] = e.getContent();
@@ -147,6 +148,7 @@ public class DatabaseAccess {
             selectionArgs[2] = "0";
         selectionArgs[3] = String.valueOf(e.getCustomIndex());
         selectionArgs[4] = e.getDescription();
+        selectionArgs[5] = String.valueOf(e.getParentElement().getId());
 
         try {
             this.open();
@@ -158,5 +160,46 @@ public class DatabaseAccess {
 
             }
         }
+    }
+
+    public void getElementById (int id){}
+
+    public void setChildrenToElement(Element e){}
+
+    public String[] getListTags(List list){
+        ArrayList<String> tags = new ArrayList<>();
+        String selectQuery = "SELECT name FROM lists JOIN tags ON lists.id = tags.list " +
+                "WHERE lists.id = ?;";
+        String[] selectionArgs = {String.valueOf(list.getId())};
+
+        try {
+            this.open();
+            Cursor cursor = db.rawQuery(selectQuery, selectionArgs);
+            try {
+                if (cursor.moveToFirst()) {
+                    do {
+                        tags.add(cursor.getString(0));
+                    } while (cursor.moveToNext());
+                }
+            } finally {
+                try {
+                    cursor.close();
+                } catch (Exception ignore) {
+
+                }
+            }
+        } finally {
+            try {
+                db.close();
+            } catch (Exception ignore) {
+
+            }
+        }
+
+        String[] t = new String[tags.size()];
+        for(int i = 0; i < tags.size(); i++){
+            t[i] = tags.get(i);
+        }
+        return t;
     }
 }

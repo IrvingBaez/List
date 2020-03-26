@@ -1,5 +1,8 @@
 package com.example.list.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -7,7 +10,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
-public class List implements Comparable {
+public class List implements Comparable, Parcelable {
     private int id;
     private String title;
     private int customIndex;
@@ -18,6 +21,36 @@ public class List implements Comparable {
     private ArrayList<Element> unfinishedElements = new ArrayList<>();
 
     private static compareMode mode = List.compareMode.CUSTOM;
+
+    protected List(Parcel in) {
+        id = in.readInt();
+        title = in.readString();
+        customIndex = in.readInt();
+    }
+
+    public static final Creator<List> CREATOR = new Creator<List>() {
+        @Override
+        public List createFromParcel(Parcel in) {
+            return new List(in);
+        }
+
+        @Override
+        public List[] newArray(int size) {
+            return new List[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(title);
+        dest.writeInt(customIndex);
+    }
 
     public enum compareMode {ALPHABETICAL, CHRONOLOGICAL, CUSTOM}
 

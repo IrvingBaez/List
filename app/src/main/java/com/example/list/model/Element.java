@@ -1,15 +1,18 @@
 package com.example.list.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
-public class Element implements Comparable{
+public class Element implements Comparable<Element>, Parcelable {
     private int id;
     private List parent;
     private String content;
@@ -17,9 +20,53 @@ public class Element implements Comparable{
     private int customIndex;
     private Date date;
     private String description;
-    private ArrayList<String> tags;
+    private Element parentElement;
+    private final ArrayList<Element> childrenElements;
+    private final ArrayList<String> tags;
 
     private static compareMode mode = compareMode.CUSTOM;
+
+    protected Element(Parcel in) {
+        id = in.readInt();
+        parent = in.readParcelable(List.class.getClassLoader());
+        content = in.readString();
+        finished = in.readByte() != 0;
+        customIndex = in.readInt();
+        description = in.readString();
+        parentElement = in.readParcelable(Element.class.getClassLoader());
+        childrenElements = in.createTypedArrayList(Element.CREATOR);
+        tags = in.createStringArrayList();
+    }
+
+    public static final Creator<Element> CREATOR = new Creator<Element>() {
+        @Override
+        public Element createFromParcel(Parcel in) {
+            return new Element(in);
+        }
+
+        @Override
+        public Element[] newArray(int size) {
+            return new Element[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeParcelable(parent, flags);
+        dest.writeString(content);
+        dest.writeByte((byte) (finished ? 1 : 0));
+        dest.writeInt(customIndex);
+        dest.writeString(description);
+        dest.writeParcelable(parentElement, flags);
+        dest.writeTypedList(childrenElements);
+        dest.writeStringList(tags);
+    }
 
     public enum compareMode {ALPHABETICAL, CHRONOLOGICAL, CUSTOM}
 
@@ -34,14 +81,18 @@ public class Element implements Comparable{
      * @param date date the element was created.
      */
     public Element(int id, List parent, String content, int finished, int customIndex, String date,
-                   String description) {
+                   String description,@Nullable Element parentElement) {
         this.id = id;
         this.parent = parent;
         this.content = content;
         this.customIndex = customIndex;
         this.finished = (finished == 1);
-        this.description = "";
+        this.description = description;
+        this.parentElement = parentElement;
+        this.childrenElements = new ArrayList<>();
         this.tags = new ArrayList<>();
+        if(parentElement != null)
+            parentElement.addChildElement(this);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.US);
         try {
@@ -57,22 +108,25 @@ public class Element implements Comparable{
      * @param parent parent in the database. Cannot be the same as id.
      * @param content content of the element to be displayed.
      */
-    public Element(List parent, String content) {
+    public Element(List parent, String content,@Nullable Element parentElement) {
         this.parent = parent;
         this.content = content;
         this.customIndex = parent.getElements().size();
         this.finished = false;
         this.date = new Date();
         this.description = "";
+        this.parentElement = parentElement;
+        this.childrenElements = new ArrayList<>();
         this.tags = new ArrayList<>();
+
+        if(parentElement != null)
+            parentElement.addChildElement(this);
 
         //Save to database.
     }
 
     @Override
-    public int compareTo(@NonNull Object o) {
-        Element e = (Element)o;
-
+    public int compareTo(Element e) {
         switch(Element.mode){
             case ALPHABETICAL:
                 return this.content.compareTo(e.content);
@@ -141,6 +195,18 @@ public class Element implements Comparable{
 
     public void removeTag(String tag){
         this.tags.remove(tag);
+    }
+
+    public void addChildElement(Element child){
+        this.childrenElements.add(child);
+    }
+
+    public void removeChildElement(Element child){
+        this.childrenElements.remove(child);
+    }
+
+    public Element getParentElement() {
+        return parentElement;
     }
 
     @NonNull
