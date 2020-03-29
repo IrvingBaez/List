@@ -1,28 +1,72 @@
 package com.example.list.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
-public class ListElement implements Comparable{
+public class ListElement implements Comparable<ListElement>, Parcelable {
     private int id;
-    private ListElement parent;
+    private final List parent;
     private String content;
     private boolean finished;
     private int customIndex;
-    private Date date;
-    private ArrayList<ListElement> elements = new ArrayList<>();
-    private ArrayList<ListElement> finishedElements = new ArrayList<>();
-    private ArrayList<ListElement> unfinishedElements = new ArrayList<>();
+    private  Date date;
+    private String description;
+    private final ListElement parentElement;
+    private final ArrayList<ListElement> childrenElements;
+    private String[] tags;
 
-
-    private static int currentId = 0;
     private static compareMode mode = compareMode.CUSTOM;
+
+    protected ListElement(Parcel in) {
+        id = in.readInt();
+        parent = in.readParcelable(List.class.getClassLoader());
+        content = in.readString();
+        finished = in.readByte() != 0;
+        customIndex = in.readInt();
+        description = in.readString();
+        parentElement = in.readParcelable(ListElement.class.getClassLoader());
+        childrenElements = in.createTypedArrayList(ListElement.CREATOR);
+        tags = in.createStringArray();
+    }
+
+    public static final Creator<ListElement> CREATOR = new Creator<ListElement>() {
+        @Override
+        public ListElement createFromParcel(Parcel in) {
+            return new ListElement(in);
+        }
+
+        @Override
+        public ListElement[] newArray(int size) {
+            return new ListElement[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeParcelable(parent, flags);
+        dest.writeString(content);
+        dest.writeByte((byte) (finished ? 1 : 0));
+        dest.writeInt(customIndex);
+        dest.writeString(description);
+        dest.writeParcelable(parentElement, flags);
+        dest.writeTypedList(childrenElements);
+        dest.writeStringArray(tags);
+    }
 
     public enum compareMode {ALPHABETICAL, CHRONOLOGICAL, CUSTOM}
 
@@ -36,15 +80,22 @@ public class ListElement implements Comparable{
      * @param customIndex index used to replicate order defined by user.
      * @param date date the element was created.
      */
-    public ListElement(int id, ListElement parent, String content, int finished, int customIndex, String date) {
-        if(this == parent)
-            return;
-
+    public ListElement(int id, List parent, String content, int finished, int customIndex, String date,
+                       String description, @Nullable ListElement parentElement) {
         this.id = id;
         this.parent = parent;
         this.content = content;
         this.customIndex = customIndex;
         this.finished = (finished == 1);
+        this.description = description;
+        this.parentElement = parentElement;
+        this.childrenElements = new ArrayList<>();
+        this.tags = new String[]{};
+
+        if(parent != null)
+            parent.addElement(this);
+        if(parentElement != null)
+            parentElement.addChildElement(this);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.US);
         try {
@@ -60,19 +111,33 @@ public class ListElement implements Comparable{
      * @param parent parent in the database. Cannot be the same as id.
      * @param content content of the element to be displayed.
      */
-    public ListElement(ListElement parent, String content) {
-        this.id = ++ListElement.currentId;
+    public ListElement(List parent, String content, @Nullable ListElement parentElement) {
         this.parent = parent;
         this.content = content;
-        this.customIndex = parent.elements.size();
+        this.customIndex = parent.getElements().size();
         this.finished = false;
         this.date = new Date();
+        this.description = "";
+        this.parentElement = parentElement;
+        this.childrenElements = new ArrayList<>();
+        this.tags = new String[]{};
+
+        if(parent != null)
+            parent.addElement(this);
+        if(parentElement != null)
+            parentElement.addChildElement(this);
     }
 
     @Override
-    public int compareTo(@NonNull Object o) {
-        ListElement e = (ListElement)o;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ListElement element = (ListElement) o;
+        return id == element.id;
+    }
 
+    @Override
+    public int compareTo(ListElement e) {
         switch(ListElement.mode){
             case ALPHABETICAL:
                 return this.content.compareTo(e.content);
@@ -87,40 +152,6 @@ public class ListElement implements Comparable{
         return 0;
     }
 
-    public void sortElements(){
-        Collections.sort(this.elements);
-    }
-
-    public void divideElements(){
-        for (ListElement e:this.elements) {
-            if(e.finished)
-                this.finishedElements.add(e);
-            else
-                this.unfinishedElements.add(e);
-        }
-    }
-
-    public void addElement(ListElement element){
-        element.parent = this;
-        this.elements.add(element);
-    }
-
-    public void removeElement(ListElement element){
-        this.elements.remove(element);
-    }
-
-    public void insertElement(ListElement element, int newIndex){
-        if(newIndex > this.elements.size()-1)
-            throw new AssertionError("Index is too large for current list.");
-
-        int currentIndex = elements.indexOf(element);
-        Collections.rotate(this.elements.subList(newIndex, currentIndex + 1), 1);
-
-        for(int i = newIndex; i <= currentIndex; i++){
-            this.elements.get(i).customIndex = i;
-        }
-    }
-
     public static void setMode(compareMode mode) {
         ListElement.mode = mode;
     }
@@ -129,7 +160,7 @@ public class ListElement implements Comparable{
         return id;
     }
 
-    public ListElement getParent(){
+    public List getParent(){
         return parent;
     }
 
@@ -137,24 +168,56 @@ public class ListElement implements Comparable{
         return content;
     }
 
-    public ArrayList<ListElement> getElements() {
-        return elements;
-    }
-
-    public ArrayList<ListElement> getFinishedElements() {
-        return finishedElements;
-    }
-
-    public ArrayList<ListElement> getUnfinishedElements() {
-        return unfinishedElements;
-    }
-
-    public boolean isEmpty(){
-        return this.elements.isEmpty();
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public boolean isFinished() {
         return finished;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
+    }
+
+    public int getCustomIndex() {
+        return customIndex;
+    }
+
+    public void setCustomIndex(int customIndex) {
+        this.customIndex = customIndex;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String[] getTags() {
+        return tags;
+    }
+
+    public void setTags(String[] tags) {
+        this.tags = tags;
+    }
+
+    public void addChildElement(ListElement child){
+        this.childrenElements.add(child);
+    }
+
+    public void removeChildElement(ListElement child){
+        this.childrenElements.remove(child);
+    }
+
+    public ArrayList<ListElement> getChildrenElements() {
+        return childrenElements;
+    }
+
+    public ListElement getParentElement() {
+        return parentElement;
     }
 
     @NonNull
