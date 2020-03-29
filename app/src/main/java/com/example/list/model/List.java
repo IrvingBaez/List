@@ -16,9 +16,9 @@ public class List implements Comparable, Parcelable {
     private int customIndex;
     private Date date;
 
-    private ArrayList<Element> elements = new ArrayList<>();
-    private ArrayList<Element> finishedElements = new ArrayList<>();
-    private ArrayList<Element> unfinishedElements = new ArrayList<>();
+    private ArrayList<ListElement> elements = new ArrayList<>();
+    private ArrayList<ListElement> finishedElements = new ArrayList<>();
+    private ArrayList<ListElement> unfinishedElements = new ArrayList<>();
 
     private static compareMode mode = List.compareMode.CUSTOM;
 
@@ -103,7 +103,7 @@ public class List implements Comparable, Parcelable {
     }
 
     public void divideElements(){
-        for (Element e:this.elements) {
+        for (ListElement e:this.elements) {
             if(e.isFinished())
                 this.finishedElements.add(e);
             else
@@ -117,15 +117,20 @@ public class List implements Comparable, Parcelable {
         Collections.sort(this.unfinishedElements);
     }
 
-    public void addElement(Element element){
-        this.elements.add(element);
+    public void addElement(ListElement element){
+        int index = elements.indexOf(element);
+
+        if(index == -1)
+            this.elements.add(element);
+        else
+            elements.set(index, element);
     }
 
-    public void removeElement(Element element){
+    public void removeElement(ListElement element){
         this.elements.remove(element);
     }
 
-    public void insertElement(Element element, int newIndex){
+    public void insertElement(ListElement element, int newIndex){
         if(newIndex > this.elements.size()-1)
             throw new AssertionError("Index is too large for current list.");
 
@@ -155,15 +160,19 @@ public class List implements Comparable, Parcelable {
         return this.elements.isEmpty();
     }
 
-    public ArrayList<Element> getElements() {
+    public ArrayList<ListElement> getElements() {
         return elements;
     }
 
-    public ArrayList<Element> getFinishedElements() {
+    public void dropElements() {
+        this.elements = new ArrayList<>();
+    }
+
+    public ArrayList<ListElement> getFinishedElements() {
         return finishedElements;
     }
 
-    public ArrayList<Element> getUnfinishedElements() {
+    public ArrayList<ListElement> getUnfinishedElements() {
         return unfinishedElements;
     }
 }

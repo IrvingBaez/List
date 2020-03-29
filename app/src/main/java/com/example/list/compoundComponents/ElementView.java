@@ -16,16 +16,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.list.R;
 import com.example.list.activities.ElementDetailsActivity;
 import com.example.list.activities.ElementsActivity;
-import com.example.list.databaseAccess.DatabaseAccess;
-import com.example.list.model.Element;
+import com.example.list.databaseAccess.AccessElements;
+import com.example.list.model.ListElement;
 
 public class ElementView extends LinearLayout {
-    Element element;
-    AppCompatActivity parent;
-    DatabaseAccess databaseAccess;
+    private ListElement element;
+    private AppCompatActivity parent;
+    private AccessElements accessElements;
 
-    CheckBox checkBox;
-    TextView view;
+    private CheckBox checkBox;
+    private TextView view;
 
     private View.OnClickListener element_click = new View.OnClickListener(){
         @Override
@@ -41,7 +41,7 @@ public class ElementView extends LinearLayout {
         public void onClick(View sender) {
             CheckBox c = (CheckBox) sender;
             element.setFinished(c.isChecked());
-            databaseAccess.updateElement(element);
+            accessElements.updateElement(element);
 
             if(checkBox.isChecked()){
                 view.setTextColor(Color.GRAY);
@@ -51,11 +51,11 @@ public class ElementView extends LinearLayout {
         }
     };
 
-    public ElementView(Context context, Element element) {
+    public ElementView(Context context, ListElement element) {
         super(context);
-        this.parent = (ElementsActivity)context;
+        this.parent = (AppCompatActivity)context;
         this.element = element;
-        this.databaseAccess  = DatabaseAccess.getInstance(parent);
+        this.accessElements = new AccessElements(parent);
 
         init(context);
     }
@@ -77,7 +77,7 @@ public class ElementView extends LinearLayout {
 
     private void init(Context context){
         LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.new_element_view, this);
+        inflater.inflate(R.layout.element_view, this);
 
         this.checkBox = this.findViewById(R.id.elementView_checkbox);
         this.view = findViewById(R.id.elementView_edit);
@@ -93,16 +93,8 @@ public class ElementView extends LinearLayout {
 
         view.setText(element.getContent());
         view.setClickable(true);
-        view.setOnClickListener(element_click);
-    }
 
-    @Override
-    protected void onFinishInflate(){
-        super.onFinishInflate();
-        this.checkBox = this.findViewById(R.id.elementView_checkbox);
-        this.view = findViewById(R.id.elementView_edit);
-
-        checkBox.setChecked(element.isFinished());
-        view.setText(element.getContent());
+        if(this.parent instanceof ElementsActivity)
+            view.setOnClickListener(element_click);
     }
 }

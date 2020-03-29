@@ -12,41 +12,41 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class Element implements Comparable<Element>, Parcelable {
+public class ListElement implements Comparable<ListElement>, Parcelable {
     private int id;
-    private List parent;
+    private final List parent;
     private String content;
     private boolean finished;
     private int customIndex;
-    private Date date;
+    private  Date date;
     private String description;
-    private Element parentElement;
-    private final ArrayList<Element> childrenElements;
-    private final ArrayList<String> tags;
+    private final ListElement parentElement;
+    private final ArrayList<ListElement> childrenElements;
+    private String[] tags;
 
     private static compareMode mode = compareMode.CUSTOM;
 
-    protected Element(Parcel in) {
+    protected ListElement(Parcel in) {
         id = in.readInt();
         parent = in.readParcelable(List.class.getClassLoader());
         content = in.readString();
         finished = in.readByte() != 0;
         customIndex = in.readInt();
         description = in.readString();
-        parentElement = in.readParcelable(Element.class.getClassLoader());
-        childrenElements = in.createTypedArrayList(Element.CREATOR);
-        tags = in.createStringArrayList();
+        parentElement = in.readParcelable(ListElement.class.getClassLoader());
+        childrenElements = in.createTypedArrayList(ListElement.CREATOR);
+        tags = in.createStringArray();
     }
 
-    public static final Creator<Element> CREATOR = new Creator<Element>() {
+    public static final Creator<ListElement> CREATOR = new Creator<ListElement>() {
         @Override
-        public Element createFromParcel(Parcel in) {
-            return new Element(in);
+        public ListElement createFromParcel(Parcel in) {
+            return new ListElement(in);
         }
 
         @Override
-        public Element[] newArray(int size) {
-            return new Element[size];
+        public ListElement[] newArray(int size) {
+            return new ListElement[size];
         }
     };
 
@@ -65,7 +65,7 @@ public class Element implements Comparable<Element>, Parcelable {
         dest.writeString(description);
         dest.writeParcelable(parentElement, flags);
         dest.writeTypedList(childrenElements);
-        dest.writeStringList(tags);
+        dest.writeStringArray(tags);
     }
 
     public enum compareMode {ALPHABETICAL, CHRONOLOGICAL, CUSTOM}
@@ -80,8 +80,8 @@ public class Element implements Comparable<Element>, Parcelable {
      * @param customIndex index used to replicate order defined by user.
      * @param date date the element was created.
      */
-    public Element(int id, List parent, String content, int finished, int customIndex, String date,
-                   String description,@Nullable Element parentElement) {
+    public ListElement(int id, List parent, String content, int finished, int customIndex, String date,
+                       String description, @Nullable ListElement parentElement) {
         this.id = id;
         this.parent = parent;
         this.content = content;
@@ -90,7 +90,10 @@ public class Element implements Comparable<Element>, Parcelable {
         this.description = description;
         this.parentElement = parentElement;
         this.childrenElements = new ArrayList<>();
-        this.tags = new ArrayList<>();
+        this.tags = new String[]{};
+
+        if(parent != null)
+            parent.addElement(this);
         if(parentElement != null)
             parentElement.addChildElement(this);
 
@@ -108,7 +111,7 @@ public class Element implements Comparable<Element>, Parcelable {
      * @param parent parent in the database. Cannot be the same as id.
      * @param content content of the element to be displayed.
      */
-    public Element(List parent, String content,@Nullable Element parentElement) {
+    public ListElement(List parent, String content, @Nullable ListElement parentElement) {
         this.parent = parent;
         this.content = content;
         this.customIndex = parent.getElements().size();
@@ -117,17 +120,25 @@ public class Element implements Comparable<Element>, Parcelable {
         this.description = "";
         this.parentElement = parentElement;
         this.childrenElements = new ArrayList<>();
-        this.tags = new ArrayList<>();
+        this.tags = new String[]{};
 
+        if(parent != null)
+            parent.addElement(this);
         if(parentElement != null)
             parentElement.addChildElement(this);
-
-        //Save to database.
     }
 
     @Override
-    public int compareTo(Element e) {
-        switch(Element.mode){
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ListElement element = (ListElement) o;
+        return id == element.id;
+    }
+
+    @Override
+    public int compareTo(ListElement e) {
+        switch(ListElement.mode){
             case ALPHABETICAL:
                 return this.content.compareTo(e.content);
             case CHRONOLOGICAL:
@@ -142,7 +153,7 @@ public class Element implements Comparable<Element>, Parcelable {
     }
 
     public static void setMode(compareMode mode) {
-        Element.mode = mode;
+        ListElement.mode = mode;
     }
 
     public int getId(){
@@ -151,10 +162,6 @@ public class Element implements Comparable<Element>, Parcelable {
 
     public List getParent(){
         return parent;
-    }
-
-    public void setParent(List parent){
-        this.parent = parent;
     }
 
     public String getContent() {
@@ -189,23 +196,27 @@ public class Element implements Comparable<Element>, Parcelable {
         this.description = description;
     }
 
-    public void addTag(String tag){
-        this.tags.add(tag);
+    public String[] getTags() {
+        return tags;
     }
 
-    public void removeTag(String tag){
-        this.tags.remove(tag);
+    public void setTags(String[] tags) {
+        this.tags = tags;
     }
 
-    public void addChildElement(Element child){
+    public void addChildElement(ListElement child){
         this.childrenElements.add(child);
     }
 
-    public void removeChildElement(Element child){
+    public void removeChildElement(ListElement child){
         this.childrenElements.remove(child);
     }
 
-    public Element getParentElement() {
+    public ArrayList<ListElement> getChildrenElements() {
+        return childrenElements;
+    }
+
+    public ListElement getParentElement() {
         return parentElement;
     }
 
