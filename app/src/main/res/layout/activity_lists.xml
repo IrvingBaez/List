@@ -4,25 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.MainActivity">
+    tools:context=".activities.ListsActivity">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".activities.MainActivity">
+        tools:context=".activities.ListsActivity">
 
         <LinearLayout
-            android:id="@+id/list_container"
+            android:id="@+id/activity_lists_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

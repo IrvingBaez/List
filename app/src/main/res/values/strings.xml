@@ -13,7 +13,7 @@
     <string name="delete">Delete</string>
     <string name="new_list">New list</string>
     <string name="list_title">List title…</string>
-    <string name="element_name">Element name…</string>
+    <string name="new_element_name">New element…</string>
     <string name="delete_list">Delete list</string>
     <string name="confirm">Confirm</string>
     <string name="wish_delete_list">Do you wish to delete this list?</string>
@@ -25,4 +25,15 @@
     <string name="list_name">List name…</string>
     <string name="new_tag">New tag</string>
     <string name="tag_name">Tag…</string>
+    <string name="sort">Sort</string>
+    <string name="alphabetical">Alphabetical</string>
+    <string name="chronological">Chronological</string>
+    <string name="custom">Custom Order</string>
+    <string name="settings">Settings</string>
+    <string name="delete_finished">Delete finished</string>
+    <string name="wish_delete_finishedElements">Do you wish to delete all finished elements? This operation is permanent.</string>
+    <string name="number_elements_finished">" elements finished"</string>
+    <string name="search">Search</string>
+    <string name="element_or_tags">Element or tags...</string>
+    <string name="recycle_finished">Recycle finised</string>
 </resources>

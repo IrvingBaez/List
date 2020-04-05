@@ -3,7 +3,7 @@ package com.example.list.databaseAccess;
 import android.content.Context;
 
 import com.example.list.model.ListElement;
-import com.example.list.model.List;
+import com.example.list.model.EasyList;
 
 import java.util.ArrayList;
 
@@ -13,7 +13,7 @@ public class AccessTags extends DatabaseAccess{
         super(context);
     }
 
-    public String[] getListTags(List list){
+    public String[] getListTags(EasyList list){
         String selectQuery = "SELECT name FROM lists JOIN tags ON lists.id = tags.list " +
                 "WHERE lists.id = ?;";
         String[] selectionArgs = {String.valueOf(list.getId())};
@@ -77,7 +77,7 @@ public class AccessTags extends DatabaseAccess{
         this.close();
     }
 
-    public void insertTag(List list, String tag) {
+    public void insertTag(EasyList list, String tag) {
         //Check if tag exist.
         String selectQuery = "SELECT id FROM tags WHERE name = ? AND list = ?";
         String[] selectionArgs = new String[]{tag, String.valueOf(list.getId())};
@@ -126,7 +126,7 @@ public class AccessTags extends DatabaseAccess{
         element.setTags(getElementTagsFromDB(element));
     }
 
-    public void deleteTag(List list, String tagName){
+    public void deleteTag(EasyList list, String tagName){
         this.open();
         String selectQuery = "SELECT id FROM tags WHERE list = ? AND name = ?;";
         String[] selectionArgs = new String[2];

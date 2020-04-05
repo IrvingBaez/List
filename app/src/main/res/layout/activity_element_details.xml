@@ -12,23 +12,23 @@ tools:context=".activities.ElementDetailsActivity">
         android:layout_height="wrap_content">
 
         <EditText
-            android:id="@+id/details_title"
+            android:id="@+id/activity_element_details_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
-            android:hint="@string/element_name"
+            android:hint="@string/new_element_name"
             android:importantForAutofill="no"
-            android:inputType="text"
+            android:inputType="textMultiLine|textCapSentences"
             android:textSize="24sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/details_checkbox"
+            app:layout_constraintEnd_toStartOf="@+id/activity_element_details_checkbox"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <CheckBox
-            android:id="@+id/details_checkbox"
+            android:id="@+id/activity_element_details_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -37,7 +37,7 @@ tools:context=".activities.ElementDetailsActivity">
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/details_description"
+            android:id="@+id/activity_element_details_description"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -47,13 +47,13 @@ tools:context=".activities.ElementDetailsActivity">
             android:ems="10"
             android:gravity="start|top"
             android:hint="@string/description_here"
-            android:inputType="textMultiLine"
+            android:inputType="textMultiLine|textCapSentences"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/details_lbl_description" />
+            app:layout_constraintTop_toBottomOf="@+id/activity_element_details_description_lbl" />
 
         <TextView
-            android:id="@+id/details_lbl_description"
+            android:id="@+id/activity_element_details_description_lbl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -61,10 +61,10 @@ tools:context=".activities.ElementDetailsActivity">
             android:text="@string/description"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/details_title" />
+            app:layout_constraintTop_toBottomOf="@+id/activity_element_details_name" />
 
         <MultiAutoCompleteTextView
-            android:id="@+id/details_tags"
+            android:id="@+id/activity_element_details_tags"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -76,10 +76,10 @@ tools:context=".activities.ElementDetailsActivity">
             android:singleLine="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/details_lbl_tags" />
+            app:layout_constraintTop_toBottomOf="@+id/activity_element_details_tags_lbl" />
 
         <TextView
-            android:id="@+id/details_lbl_tags"
+            android:id="@+id/activity_element_details_tags_lbl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -87,10 +87,10 @@ tools:context=".activities.ElementDetailsActivity">
             android:text="@string/tags"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/details_description" />
+            app:layout_constraintTop_toBottomOf="@+id/activity_element_details_description" />
 
         <TextView
-            android:id="@+id/details_lbl_sublist"
+            android:id="@+id/activity_element_details_sublist_lbl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -98,10 +98,10 @@ tools:context=".activities.ElementDetailsActivity">
             android:text="@string/sub_list"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/details_tags" />
+            app:layout_constraintTop_toBottomOf="@+id/activity_element_details_tags" />
 
         <Button
-            android:id="@+id/details_newElement"
+            android:id="@+id/activity_element_details_newElement_btn"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginTop="32dp"
@@ -111,12 +111,12 @@ tools:context=".activities.ElementDetailsActivity">
             android:text="@string/new_element"
             android:textAlignment="center"
             android:textAllCaps="false"
-            app:layout_constraintBottom_toTopOf="@+id/details_sublist"
+            app:layout_constraintBottom_toTopOf="@+id/activity_element_details_sublist"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/details_tags" />
+            app:layout_constraintTop_toBottomOf="@+id/activity_element_details_tags" />
 
         <LinearLayout
-            android:id="@+id/details_sublist"
+            android:id="@+id/activity_element_details_sublist"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -125,20 +125,9 @@ tools:context=".activities.ElementDetailsActivity">
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/details_lbl_sublist">
+            app:layout_constraintTop_toBottomOf="@+id/activity_element_details_sublist_lbl">
 
         </LinearLayout>
-
-        <Button
-            android:id="@+id/details_done"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="@string/done"
-            android:textAllCaps="false"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/details_sublist" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

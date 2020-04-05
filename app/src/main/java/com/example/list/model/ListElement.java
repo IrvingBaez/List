@@ -14,7 +14,7 @@ import java.util.Locale;
 
 public class ListElement implements Comparable<ListElement>, Parcelable {
     private int id;
-    private final List parent;
+    private final EasyList parent;
     private String content;
     private boolean finished;
     private int customIndex;
@@ -24,11 +24,9 @@ public class ListElement implements Comparable<ListElement>, Parcelable {
     private final ArrayList<ListElement> childrenElements;
     private String[] tags;
 
-    private static compareMode mode = compareMode.CUSTOM;
-
     protected ListElement(Parcel in) {
         id = in.readInt();
-        parent = in.readParcelable(List.class.getClassLoader());
+        parent = in.readParcelable(EasyList.class.getClassLoader());
         content = in.readString();
         finished = in.readByte() != 0;
         customIndex = in.readInt();
@@ -68,8 +66,6 @@ public class ListElement implements Comparable<ListElement>, Parcelable {
         dest.writeStringArray(tags);
     }
 
-    public enum compareMode {ALPHABETICAL, CHRONOLOGICAL, CUSTOM}
-
     /**
      * Method meant to be used when initializing elements from database.
      *
@@ -80,7 +76,7 @@ public class ListElement implements Comparable<ListElement>, Parcelable {
      * @param customIndex index used to replicate order defined by user.
      * @param date date the element was created.
      */
-    public ListElement(int id, List parent, String content, int finished, int customIndex, String date,
+    public ListElement(int id, EasyList parent, String content, int finished, int customIndex, String date,
                        String description, @Nullable ListElement parentElement) {
         this.id = id;
         this.parent = parent;
@@ -111,7 +107,7 @@ public class ListElement implements Comparable<ListElement>, Parcelable {
      * @param parent parent in the database. Cannot be the same as id.
      * @param content content of the element to be displayed.
      */
-    public ListElement(List parent, String content, @Nullable ListElement parentElement) {
+    public ListElement(EasyList parent, String content, @Nullable ListElement parentElement) {
         this.parent = parent;
         this.content = content;
         this.customIndex = parent.getElements().size();
@@ -138,9 +134,9 @@ public class ListElement implements Comparable<ListElement>, Parcelable {
 
     @Override
     public int compareTo(ListElement e) {
-        switch(ListElement.mode){
+        switch(this.parent.getCompareMode()){
             case ALPHABETICAL:
-                return this.content.compareTo(e.content);
+                return this.content.toLowerCase().compareTo(e.content.toLowerCase());
             case CHRONOLOGICAL:
                 return this.date.compareTo(e.date);
             case CUSTOM:
@@ -152,15 +148,11 @@ public class ListElement implements Comparable<ListElement>, Parcelable {
         return 0;
     }
 
-    public static void setMode(compareMode mode) {
-        ListElement.mode = mode;
-    }
-
     public int getId(){
         return id;
     }
 
-    public List getParent(){
+    public EasyList getParent(){
         return parent;
     }
 

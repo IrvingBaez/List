@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -19,13 +18,13 @@ import com.example.list.activities.ElementsActivity;
 import com.example.list.databaseAccess.AccessElements;
 import com.example.list.model.ListElement;
 
-public class ElementView extends LinearLayout {
+public class ElementView extends GenericallyRecyclableView {
     private ListElement element;
     private AppCompatActivity parent;
     private AccessElements accessElements;
 
     private CheckBox checkBox;
-    private TextView view;
+    private TextView TextView;
 
     private View.OnClickListener element_click = new View.OnClickListener(){
         @Override
@@ -44,10 +43,13 @@ public class ElementView extends LinearLayout {
             accessElements.updateElement(element);
 
             if(checkBox.isChecked()){
-                view.setTextColor(Color.GRAY);
+                TextView.setTextColor(Color.GRAY);
             }else{
-                view.setTextColor(Color.BLACK);
+                TextView.setTextColor(Color.BLACK);
             }
+
+            if(parent instanceof ElementsActivity)
+                ((ElementsActivity)parent).sortData();
         }
     };
 
@@ -62,39 +64,67 @@ public class ElementView extends LinearLayout {
 
     public ElementView(Context context) {
         super(context);
-        init(context);
+        this.parent = (AppCompatActivity)context;
+        this.accessElements = new AccessElements(parent);
+
+        LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater.inflate(R.layout.view_element, this);
+
+        this.checkBox = this.findViewById(R.id.view_element_checkbox);
+        this.TextView = findViewById(R.id.view_element_name);
     }
 
     public ElementView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init(context);
     }
 
     public ElementView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
+    }
+
+    @Override
+    public void setData(Object data) {
+        setElement((ListElement) data);
     }
 
     private void init(Context context){
         LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.element_view, this);
+        inflater.inflate(R.layout.view_element, this);
 
-        this.checkBox = this.findViewById(R.id.elementView_checkbox);
-        this.view = findViewById(R.id.elementView_edit);
+        this.checkBox = this.findViewById(R.id.view_element_checkbox);
+        this.TextView = findViewById(R.id.view_element_name);
 
         checkBox.setChecked(element.isFinished());
         checkBox.setOnClickListener(element_check);
 
         if(checkBox.isChecked()){
-            view.setTextColor(Color.GRAY);
+            TextView.setTextColor(Color.GRAY);
         }else{
-            view.setTextColor(Color.BLACK);
+            TextView.setTextColor(Color.BLACK);
         }
 
-        view.setText(element.getContent());
-        view.setClickable(true);
+        TextView.setText(element.getContent());
+        TextView.setClickable(true);
 
         if(this.parent instanceof ElementsActivity)
-            view.setOnClickListener(element_click);
+            TextView.setOnClickListener(element_click);
+    }
+
+    public void setElement(ListElement element) {
+        this.element = element;
+        checkBox.setChecked(element.isFinished());
+        checkBox.setOnClickListener(element_check);
+
+        if(checkBox.isChecked()){
+            TextView.setTextColor(Color.GRAY);
+        }else{
+            TextView.setTextColor(Color.BLACK);
+        }
+
+        TextView.setText(element.getContent());
+        TextView.setClickable(true);
+
+        if(this.parent instanceof ElementsActivity)
+            TextView.setOnClickListener(element_click);
     }
 }

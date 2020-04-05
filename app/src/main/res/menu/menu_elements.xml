@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_elements_details"
+        android:title="@string/details" />
+    <item
+        android:id="@+id/menu_elements_search"
+        android:title="@string/search" />
+    <item
+        android:id="@+id/menu_elements_sort"
+        android:title="@string/sort" >
+        <menu>
+            <item
+                android:id="@+id/menu_elements_sort_alphabetical"
+                android:title="@string/alphabetical" />
+            <item
+                android:id="@+id/menu_elements_sort_chronological"
+                android:title="@string/chronological" />
+            <item
+                android:id="@+id/menu_elements_sort_custom"
+                android:title="@string/custom" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/menu_elements_recycle_finished"
+        android:title="@string/recycle_finished" />
+    <item
+        android:id="@+id/menu_elements_delete_finished"
+        android:title="@string/delete_finished" />
+    <item
+        android:id="@+id/menu_elements_delete"
+        android:title="@string/delete_list" />
+</menu>

@@ -1,7 +1,6 @@
 package com.example.list.compoundComponents;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +15,10 @@ import com.example.list.R;
 import com.example.list.activities.ElementDetailsActivity;
 import com.example.list.activities.ListDetailsActivity;
 import com.example.list.databaseAccess.AccessTags;
-import com.example.list.model.List;
+import com.example.list.model.EasyList;
 
 public class TagView extends LinearLayout {
-    private List list;
+    private EasyList list;
     private String tagName;
     private AppCompatActivity parent;
     private TextView nameView;
@@ -34,7 +33,7 @@ public class TagView extends LinearLayout {
         }
     };
 
-    public TagView(Context context, List list, String tagName){
+    public TagView(Context context, EasyList list, String tagName){
         super(context);
         this.parent = (AppCompatActivity) context;
         this.list = list;
@@ -55,10 +54,10 @@ public class TagView extends LinearLayout {
 
     private void init(Context context){
         LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.tag_view, this);
+        inflater.inflate(R.layout.view_tag, this);
 
-        this.nameView = this.findViewById(R.id.tagView_text);
-        this.delete = findViewById(R.id.tagView_button);
+        this.nameView = this.findViewById(R.id.view_tag_text);
+        this.delete = findViewById(R.id.view_tag_button);
 
         nameView.setText(this.tagName);
 

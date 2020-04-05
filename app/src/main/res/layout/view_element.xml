@@ -1,14 +1,15 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
-    <Button
-        android:id="@+id/tagView_button"
+    <CheckBox
+        android:id="@+id/view_element_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="24sp" />
+        android:layout_toStartOf="@+id/edit"
+        android:layout_gravity="top"/>
 
     <TextView
-        android:id="@+id/tagView_text"
+        android:id="@+id/view_element_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textSize="24sp" />
+        android:textSize="22sp" />
 </merge>

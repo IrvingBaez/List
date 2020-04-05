@@ -11,7 +11,7 @@
         android:layout_height="wrap_content">
 
         <EditText
-            android:id="@+id/list_details_title"
+            android:id="@+id/activity_list_details_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -27,7 +27,18 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/list_details_lbl_tags"
+            android:id="@+id/activity_list_details_fraction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="32dp"
+            android:text="@string/number_elements_finished"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/activity_list_details_title" />
+
+        <TextView
+            android:id="@+id/activity_list_details_tags_lbl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -35,10 +46,10 @@
             android:text="@string/tags"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/list_details_title" />
+            app:layout_constraintTop_toBottomOf="@+id/activity_list_details_fraction" />
 
         <LinearLayout
-            android:id="@+id/list_details_sublist"
+            android:id="@+id/activity_list_details_tags"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -49,7 +60,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/list_details_lbl_tags"></LinearLayout>
+            app:layout_constraintTop_toBottomOf="@+id/activity_list_details_tags_lbl"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

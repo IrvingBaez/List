@@ -2,10 +2,10 @@ package com.example.list.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
+import android.text.Editable;
+import android.text.SpannableStringBuilder;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +23,7 @@ import com.example.list.compoundComponents.ElementView;
 import com.example.list.databaseAccess.AccessElements;
 import com.example.list.databaseAccess.AccessTags;
 import com.example.list.model.ListElement;
+import com.example.list.util.KeyboardUtils;
 
 import java.util.ArrayList;
 import java.util.StringTokenizer;
@@ -38,18 +39,28 @@ public class ElementDetailsActivity extends AppCompatActivity implements Confirm
     private MultiAutoCompleteTextView tags;
     private Button newElement;
     private LinearLayout subList;
-    private Button done;
 
-    View.OnClickListener done_click = new View.OnClickListener() {
+    TextWatcher title_changed = new TextWatcher() {
+        int selection;
+
         @Override
-        public void onClick(View sender) {
-            element.setContent(title.getText().toString());
-            element.setFinished(checkBox.isChecked());
-            element.setDescription(description.getText().toString());
-            accessElements.updateElement(element);
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            this.selection = title.getSelectionStart();
+        }
 
-            saveTags();
-            ElementDetailsActivity.this.onBackPressed();
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            String currentTitle = title.getText().toString();
+            if(currentTitle.contains(String.valueOf('\n'))) {
+                title.setText(currentTitle.replace('\n', '\0'));
+                title.setSelection(selection);
+                KeyboardUtils.hideKeyboard(ElementDetailsActivity.this);
+            }
         }
     };
 
@@ -71,20 +82,21 @@ public class ElementDetailsActivity extends AppCompatActivity implements Confirm
         this.element = getIntent().getParcelableExtra("element");
         this.setTitle(element.getContent());
 
-        this.title = findViewById(R.id.details_title);
-        this.checkBox = findViewById(R.id.details_checkbox);
-        this.description = findViewById(R.id.details_description);
-        this.tags = findViewById(R.id.details_tags);
-        this.newElement = findViewById(R.id.details_newElement);
-        this.subList = findViewById(R.id.details_sublist);
-        this.done = findViewById(R.id.details_done);
+        this.title = findViewById(R.id.activity_element_details_name);
+        this.checkBox = findViewById(R.id.activity_element_details_checkbox);
+        this.description = findViewById(R.id.activity_element_details_description);
+        this.tags = findViewById(R.id.activity_element_details_tags);
+        this.newElement = findViewById(R.id.activity_element_details_newElement_btn);
+        this.subList = findViewById(R.id.activity_element_details_sublist);
+
+        title.addTextChangedListener(title_changed);
 
         this.fillFields();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.element_details_overflow_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_element_details, menu);
         return true;
     }
 
@@ -93,7 +105,7 @@ public class ElementDetailsActivity extends AppCompatActivity implements Confirm
         int id = item.getItemId();
 
         switch (id){
-            case R.id.element_details_menu_delete:
+            case R.id.menu_element_details_delete:
                 ConfirmDialog confirm = new ConfirmDialog(R.string.confirm, R.string.wish_delete_list, R.string.no, R.string.yes);
                 confirm.show(getSupportFragmentManager(), "confirm");
                 break;
@@ -129,7 +141,6 @@ public class ElementDetailsActivity extends AppCompatActivity implements Confirm
         }
 
         //Listeners
-        this.done.setOnClickListener(done_click);
         this.newElement.setOnClickListener(newElement_click);
     }
 
@@ -160,6 +171,17 @@ public class ElementDetailsActivity extends AppCompatActivity implements Confirm
     @Override
     public void onYesClicked() {
         accessElements.deleteElement(element);
-        ElementDetailsActivity.this.onBackPressed();
+        super.onBackPressed();
+    }
+
+    @Override
+    public void onBackPressed() {
+        element.setContent(title.getText().toString());
+        element.setFinished(checkBox.isChecked());
+        element.setDescription(description.getText().toString());
+        accessElements.updateElement(element);
+
+        saveTags();
+        super.onBackPressed();
     }
 }
