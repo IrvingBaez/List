@@ -1,9 +1,11 @@
 package com.example.list.databaseAccess;
 
 import android.content.Context;
-import android.widget.LinearLayout;
 
+import com.example.list.model.EasyList;
 import com.example.list.model.ListElement;
+
+import java.util.ArrayList;
 
 public class AccessElements extends DatabaseAccess{
     public AccessElements(Context context) {
@@ -66,6 +68,8 @@ public class AccessElements extends DatabaseAccess{
         this.open();
         db.execSQL(selectQuery, selectionArgs);
         this.close();
+
+        element.getParent().removeElement(element);
     }
 
     public void setChildrenToElement(ListElement element){
@@ -88,5 +92,63 @@ public class AccessElements extends DatabaseAccess{
             }while(cursor.moveToNext());
         }
         this.close();
+    }
+
+    public ArrayList<ListElement> search(EasyList list, String term) {
+        term = "%" + term + "%";
+        String selectQuery = "SELECT * FROM elements \n" +
+                "LEFT JOIN element_tags ON elements.id = element_tags.element\n" +
+                "LEFT JOIN tags ON element_tags.tag = tags.id\n" +
+                "\n" +
+                "WHERE \n" +
+                "elements.parent = ? AND \n" +
+                "(content LIKE ? OR \n" +
+                "name LIKE ?);";
+        String[] selectionArgs = new String[]{String.valueOf(list.getId()), term, term};
+
+        ArrayList<ListElement> result = new ArrayList<>();
+        this.open();
+        this.cursor = db.rawQuery(selectQuery, selectionArgs);
+        if(cursor.moveToFirst()) {
+            do {
+                int id = Integer.parseInt(cursor.getString(0));
+                String content = cursor.getString(1);
+                EasyList listParent  = (new AccessLists(context)).getList(Integer.parseInt(cursor.getString(2)));
+                int finished = Integer.parseInt(cursor.getString(3));
+                int customIndex = Integer.parseInt(cursor.getString(4));
+                String timeStamp = cursor.getString(5);
+                String description = cursor.getString(6);
+
+                result.add(new ListElement(id, listParent, content, finished, customIndex, timeStamp, description, null));
+            } while (cursor.moveToNext());
+
+            this.close();
+        }
+        return result;
+    }
+
+    private ListElement getElement(int id) {
+        String selectQuery = "SELECT * FROM elements WHERE id = ?;";
+        String[] selectionArgs = new String[]{String.valueOf(id)};
+
+        this.open();
+        this.cursor = db.rawQuery(selectQuery, selectionArgs);
+        ListElement result;
+        if (cursor.moveToFirst()) {
+            String content = cursor.getString(1);
+            EasyList listParent = (new AccessLists(context)).getList(Integer.parseInt(cursor.getString(2)));
+            int finished = Integer.parseInt(cursor.getString(3));
+            int customIndex = Integer.parseInt(cursor.getString(4));
+            String timeStamp = cursor.getString(5);
+            String description = cursor.getString(6);
+            ListElement elementParent = this.getElement(Integer.parseInt(cursor.getString(7)));
+
+            result = new ListElement(id, listParent, content, finished, customIndex, timeStamp, description, elementParent);
+        } else {
+            return null;
+        }
+
+        this.close();
+        return result;
     }
 }

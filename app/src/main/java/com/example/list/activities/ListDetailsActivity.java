@@ -18,13 +18,15 @@ import com.example.list.compoundComponents.ConfirmDialog;
 import com.example.list.compoundComponents.TagView;
 import com.example.list.databaseAccess.AccessLists;
 import com.example.list.databaseAccess.AccessTags;
-import com.example.list.model.List;
+import com.example.list.model.EasyList;
 
 public class ListDetailsActivity extends AppCompatActivity implements ConfirmDialog.ConfirmDialogListener {
-    private List list;
+    private EasyList list;
     private EditText listName;
+    private TextView numberFinished;
     private LinearLayout tagContainer;
     private AccessTags accessTags;
+    private AccessLists accessLists;
     private EditText newTagName;
 
     EditText.OnEditorActionListener submit = new EditText.OnEditorActionListener() {
@@ -48,13 +50,18 @@ public class ListDetailsActivity extends AppCompatActivity implements ConfirmDia
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_details);
-        this.list = getIntent().getParcelableExtra("selectedList");
+        this.list = getIntent().getParcelableExtra("list");
+        this.accessLists = new AccessLists(this);
         this.accessTags = new AccessTags(this);
 
-        this.listName = findViewById(R.id.list_details_title);
-        this.tagContainer = findViewById(R.id.list_details_sublist);
+        this.listName = findViewById(R.id.activity_list_details_title);
+        this.numberFinished = findViewById(R.id.activity_list_details_fraction);
+        this.tagContainer = findViewById(R.id.activity_list_details_tags);
 
+        this.accessLists.setListChildren(list);
         this.listName.setText(this.list.getTitle());
+        this.numberFinished.setText(list.getFinishedCount() + "/" + list.getElements().size() +
+                getResources().getString(R.string.number_elements_finished));
     }
 
     @Override
@@ -65,7 +72,7 @@ public class ListDetailsActivity extends AppCompatActivity implements ConfirmDia
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.list_details_overflow_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_list_details, menu);
         return true;
     }
 
@@ -74,7 +81,7 @@ public class ListDetailsActivity extends AppCompatActivity implements ConfirmDia
         int id = item.getItemId();
 
         switch (id){
-            case R.id.list_details_menu_newTag:
+            case R.id.menu_list_details_newTag:
                 newTagName = new EditText(this);
                 newTagName.setHint(R.string.tag_name);
                 newTagName.setBackground(null);
@@ -83,7 +90,7 @@ public class ListDetailsActivity extends AppCompatActivity implements ConfirmDia
                 newTagName.setOnEditorActionListener(submit);
                 tagContainer.addView(newTagName);
                 break;
-            case R.id.list_details_menu_delete:
+            case R.id.menu_list_details_delete:
                 ConfirmDialog confirm = new ConfirmDialog(R.string.confirm, R.string.wish_delete_list, R.string.no, R.string.yes);
                 confirm.show(getSupportFragmentManager(), "confirm");
                 break;
@@ -105,8 +112,15 @@ public class ListDetailsActivity extends AppCompatActivity implements ConfirmDia
     public void onYesClicked() {
         (new AccessLists(this)).deleteList(list);
 
-        Intent i = new Intent(this, MainActivity.class);
+        Intent i = new Intent(this, ListsActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
+    }
+
+    @Override
+    public void onBackPressed() {
+        list.setTitle(this.listName.getText().toString());
+        (new AccessLists(this)).updateList(list);
+        super.onBackPressed();
     }
 }

@@ -10,33 +10,32 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
-public class List implements Comparable, Parcelable {
+public class EasyList implements Comparable, Parcelable {
     private int id;
     private String title;
     private int customIndex;
     private Date date;
+    private CompareMode compareMode;
 
+    public enum CompareMode {ALPHABETICAL, CHRONOLOGICAL, CUSTOM}
     private ArrayList<ListElement> elements = new ArrayList<>();
-    private ArrayList<ListElement> finishedElements = new ArrayList<>();
-    private ArrayList<ListElement> unfinishedElements = new ArrayList<>();
 
-    private static compareMode mode = List.compareMode.CUSTOM;
-
-    protected List(Parcel in) {
+    protected EasyList(Parcel in) {
         id = in.readInt();
         title = in.readString();
         customIndex = in.readInt();
+        compareMode = CompareMode.valueOf(in.readString());
     }
 
-    public static final Creator<List> CREATOR = new Creator<List>() {
+    public static final Creator<EasyList> CREATOR = new Creator<EasyList>() {
         @Override
-        public List createFromParcel(Parcel in) {
-            return new List(in);
+        public EasyList createFromParcel(Parcel in) {
+            return new EasyList(in);
         }
 
         @Override
-        public List[] newArray(int size) {
-            return new List[size];
+        public EasyList[] newArray(int size) {
+            return new EasyList[size];
         }
     };
 
@@ -50,9 +49,8 @@ public class List implements Comparable, Parcelable {
         dest.writeInt(id);
         dest.writeString(title);
         dest.writeInt(customIndex);
+        dest.writeString(this.compareMode.name());
     }
-
-    public enum compareMode {ALPHABETICAL, CHRONOLOGICAL, CUSTOM}
 
     /**
      * Meant to be used when loading lists from database.
@@ -61,10 +59,11 @@ public class List implements Comparable, Parcelable {
      * @param customIndex id as appears in database, used for custom sorting.
      * @param date date as appears in database, will be casted into a Date object.
      */
-    public List(int id, String title, int customIndex, String date) {
+    public EasyList(int id, String title, int customIndex, String date, CompareMode compareMode) {
         this.id = id;
         this.title = title;
         this.customIndex = customIndex;
+        this.compareMode = compareMode;
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.US);
         try {
@@ -78,43 +77,20 @@ public class List implements Comparable, Parcelable {
      * Used to create Lists and add the to the data base.
      * @param title title of the new list.
      */
-    public List(String title, int customIndex) {
+    public EasyList(String title, int customIndex) {
         this.title = title;
         this.customIndex = customIndex;
-        //Save to database.
+        this.compareMode = CompareMode.CHRONOLOGICAL;
     }
 
     @Override
     public int compareTo(Object o) {
-        List l = (List)o;
-
-        switch(List.mode){
-            case ALPHABETICAL:
-                return this.title.compareTo(l.title);
-            case CHRONOLOGICAL:
-                return this.date.compareTo(l.date);
-            case CUSTOM:
-                if(this.customIndex < l.customIndex)
-                    return -1;
-                if(this.customIndex > l.customIndex)
-                    return 1;
-        }
-        return 0;
-    }
-
-    public void divideElements(){
-        for (ListElement e:this.elements) {
-            if(e.isFinished())
-                this.finishedElements.add(e);
-            else
-                this.unfinishedElements.add(e);
-        }
+        EasyList l = (EasyList)o;
+        return Integer.compare(this.customIndex, l.customIndex);
     }
 
     public void sortElements(){
         Collections.sort(this.elements);
-        Collections.sort(this.finishedElements);
-        Collections.sort(this.unfinishedElements);
     }
 
     public void addElement(ListElement element){
@@ -122,8 +98,6 @@ public class List implements Comparable, Parcelable {
 
         if(index == -1)
             this.elements.add(element);
-        else
-            elements.set(index, element);
     }
 
     public void removeElement(ListElement element){
@@ -152,6 +126,22 @@ public class List implements Comparable, Parcelable {
         return title;
     }
 
+    public CompareMode getCompareMode() {
+        return compareMode;
+    }
+
+    public void setCompareMode(CompareMode compareMode) {
+        this.compareMode = compareMode;
+    }
+
+    public int getCustomIndex() {
+        return customIndex;
+    }
+
+    public void setCustomIndex(int customIndex){
+        this.customIndex = customIndex;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -164,15 +154,18 @@ public class List implements Comparable, Parcelable {
         return elements;
     }
 
+    public int getFinishedCount(){
+        int finished = 0;
+
+        for(ListElement element : this.elements){
+            if(element.isFinished())
+                finished++;
+        }
+
+        return finished;
+    }
+
     public void dropElements() {
         this.elements = new ArrayList<>();
-    }
-
-    public ArrayList<ListElement> getFinishedElements() {
-        return finishedElements;
-    }
-
-    public ArrayList<ListElement> getUnfinishedElements() {
-        return unfinishedElements;
     }
 }

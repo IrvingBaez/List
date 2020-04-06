@@ -4,14 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.ElementsActivity">
+    tools:context=".activities.ListsActivity">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".activities.ElementsActivity">
+        tools:context=".activities.ListsActivity">
 
         <EditText
-            android:id="@+id/activity_elements_newElement"
+            android:id="@+id/activity_list_new"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -20,7 +21,7 @@
             android:autofillHints=""
             android:background="@android:color/transparent"
             android:ems="10"
-            android:hint="@string/new_element_name"
+            android:hint="@string/new_list"
             android:inputType="textMultiLine"
             android:text=""
             android:textSize="22sp"
@@ -29,15 +30,15 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.example.list.compoundComponents.GenericRecyclerView
-            android:id="@+id/activity_elements_container_unfinished"
+            android:id="@+id/activity_list_recycler"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="0dp"
             android:layout_marginEnd="8dp"
-            android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/activity_elements_newElement" />
+            app:layout_constraintTop_toBottomOf="@id/activity_list_new" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
