@@ -87,6 +87,11 @@ public class ElementView extends GenericallyRecyclableView {
         setElement((ListElement) data);
     }
 
+    @Override
+    Object getData() {
+        return this.element;
+    }
+
     private void init(Context context){
         LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.view_element, this);
@@ -105,9 +110,7 @@ public class ElementView extends GenericallyRecyclableView {
 
         TextView.setText(element.getContent());
         TextView.setClickable(true);
-
-        if(this.parent instanceof ElementsActivity)
-            TextView.setOnClickListener(element_click);
+        TextView.setOnClickListener(element_click);
     }
 
     public void setElement(ListElement element) {

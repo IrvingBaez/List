@@ -9,7 +9,6 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,11 +18,13 @@ import com.example.list.R;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
 public class GenericRecyclerView<DATA> extends LinearLayout {
     private ArrayList<DATA> dataList;
     private RecyclerView recyclerView;
     private GenericAdapter adapter;
+    private LinearLayoutManager manager;
     private GenericallyRecyclableView instanceExample;
     private GenericRecyclerViewListener parent;
 
@@ -48,7 +49,7 @@ public class GenericRecyclerView<DATA> extends LinearLayout {
 
         this.parent = (GenericRecyclerViewListener)context;
         this.instanceExample = null;
-        this.recyclerView = findViewById(R.id.view_experimental_view);
+        this.recyclerView = findViewById(R.id.view_generic_recycler_view);
         this.recyclerView.setNestedScrollingEnabled(true);
         //this.recyclerView.addItemDecoration(new DividerItemDecoration(this.getContext(),VERTICAL));
     }
@@ -59,14 +60,14 @@ public class GenericRecyclerView<DATA> extends LinearLayout {
 
     public void setDataList(ArrayList<DATA> dataList) {
         this.dataList = dataList;
-        LinearLayoutManager manager = new LinearLayoutManager(this.getContext());
+        this.manager = new LinearLayoutManager(this.getContext());
         this.recyclerView.setLayoutManager(manager);
         this.adapter = new GenericAdapter();
         this.recyclerView.setAdapter(adapter);
 
         ItemTouchHelper helper = new ItemTouchHelper(new GenericCallback(
                 ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START |
-                        ItemTouchHelper.END, ItemTouchHelper.LEFT));
+                        ItemTouchHelper.END, 0));
 
         helper.attachToRecyclerView(this.recyclerView);
     }
@@ -104,6 +105,7 @@ public class GenericRecyclerView<DATA> extends LinearLayout {
 
         public class Data extends RecyclerView.ViewHolder {
             private GenericallyRecyclableView view;
+            private DATA data;
 
             public Data(@NonNull View itemView) {
                 super(itemView);
@@ -111,7 +113,8 @@ public class GenericRecyclerView<DATA> extends LinearLayout {
             }
 
             public void assignData(DATA data) {
-                this.view.setData(data);
+                this.data = data;
+                this.view.setData(this.data);
             }
         }
     }
@@ -130,8 +133,7 @@ public class GenericRecyclerView<DATA> extends LinearLayout {
             int position_target = target.getAdapterPosition();
             Collections.swap(dataList, position_dragged, position_target);
             adapter.notifyItemMoved(position_dragged, position_target);
-
-            parent.onDataReordered();
+            //parent.onDataReordered();
             return false;
         }
 
@@ -148,6 +150,18 @@ public class GenericRecyclerView<DATA> extends LinearLayout {
         public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
             super.clearView(recyclerView, viewHolder);
             viewHolder.itemView.setAlpha(1f);
+
+            ArrayList<DATA> newOrder = new ArrayList<>();
+
+            for(int i = 0; i < dataList.size(); i++){
+                GenericallyRecyclableView view = (GenericallyRecyclableView) Objects.requireNonNull(recyclerView.
+                        findViewHolderForAdapterPosition(i)).itemView;
+                newOrder.add((DATA)view.getData());
+            }
+
+            dataList.clear();
+            dataList.addAll(newOrder);
+            adapter.notifyDataSetChanged();
             parent.onClearView();
         }
 
@@ -158,7 +172,6 @@ public class GenericRecyclerView<DATA> extends LinearLayout {
     }
 
     public interface GenericRecyclerViewListener{
-        void onDataReordered();
         void onClearView();
     }
 }

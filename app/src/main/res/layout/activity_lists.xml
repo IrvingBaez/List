@@ -11,19 +11,34 @@
         android:layout_height="wrap_content"
         tools:context=".activities.ListsActivity">
 
-        <LinearLayout
-            android:id="@+id/activity_lists_container"
+        <EditText
+            android:id="@+id/activity_list_new"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:orientation="vertical"
+            android:autofillHints=""
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:hint="@string/new_list"
+            android:inputType="textMultiLine"
+            android:text=""
+            android:textSize="22sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent" />
 
-        </LinearLayout>
+        <com.example.list.compoundComponents.GenericRecyclerView
+            android:id="@+id/activity_list_recycler"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/activity_list_new" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

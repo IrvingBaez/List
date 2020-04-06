@@ -50,7 +50,7 @@ public class ListDetailsActivity extends AppCompatActivity implements ConfirmDia
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_details);
-        this.list = getIntent().getParcelableExtra("selectedList");
+        this.list = getIntent().getParcelableExtra("list");
         this.accessLists = new AccessLists(this);
         this.accessTags = new AccessTags(this);
 

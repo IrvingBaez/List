@@ -19,7 +19,6 @@ public abstract class GenericallyRecyclableView extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public void setData(Object data){
-
-    }
+    abstract void setData(Object data);
+    abstract Object getData();
 }

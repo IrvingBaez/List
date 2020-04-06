@@ -2,88 +2,55 @@ package com.example.list.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.TypedValue;
+import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.list.R;
+import com.example.list.compoundComponents.GenericRecyclerView;
+import com.example.list.compoundComponents.ListView;
 import com.example.list.databaseAccess.AccessLists;
 import com.example.list.model.*;
 import com.example.list.util.KeyboardUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
-public class ListsActivity extends AppCompatActivity {
+public class ListsActivity extends AppCompatActivity implements GenericRecyclerView.GenericRecyclerViewListener {
     private AccessLists accessLists;
     private ArrayList<EasyList> lists;
     private EditText newListTitle;
-    private LinearLayout listContainer;
-
-    private Button experimental;
-
-    private View.OnClickListener list_selection = new View.OnClickListener(){
-        @Override
-        public void onClick(View v) {
-            TextView b = (TextView)v;
-            EasyList selected = lists.get(b.getId());
-
-            Intent i = new Intent(ListsActivity.this, ElementsActivity.class);
-            i.putExtra("selectedList", selected);
-            startActivity(i);
-        }
-    };
-
-    private EditText.OnEditorActionListener submit = new EditText.OnEditorActionListener(){
-        @Override
-        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        String title = newListTitle.getText().toString();
-
-        if (actionId == EditorInfo.IME_ACTION_DONE && !title.trim().isEmpty()) {
-            EasyList newList = new EasyList(title, lists.size());
-            accessLists.insertList(newList, lists.size());
-
-            loadLists();
-            return true;
-        }else{
-            newListTitle.setText("");
-            return false;
-        }
-        }
-    };
-
-    View.OnKeyListener backspace_pressed = new View.OnKeyListener() {
-        @Override
-        public boolean onKey(View v, int keyCode, KeyEvent event) {
-            if(keyCode == KeyEvent.KEYCODE_DEL){
-                KeyboardUtils.hideKeyboard(ListsActivity.this);
-            }
-            return false;
-        }
-    };
+    private GenericRecyclerView<EasyList> recycler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lists);
 
-        this.listContainer = findViewById(R.id.activity_lists_container);
+        this.newListTitle = findViewById(R.id.activity_list_new);
+        this.newListTitle.setOnEditorActionListener(submit);
+        this.newListTitle.setOnKeyListener(backspace_pressed);
+        this.newListTitle.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        this.newListTitle.setRawInputType(InputType.TYPE_CLASS_TEXT);
+
         this.accessLists = new AccessLists(this);
+        this.recycler = findViewById(R.id.activity_list_recycler);
+        this.recycler.setViewExample(new ListView(this));
+        this.lists = accessLists.getLists();
+        Collections.sort(lists);
+        this.recycler.setDataList(lists);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadLists();
+        refreshLists();
     }
 
     @Override
@@ -105,27 +72,49 @@ public class ListsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadLists(){
-        this.lists = accessLists.getLists();
-        listContainer.removeAllViews();
-
-        for (EasyList list : this.lists){
-            TextView view = new TextView(this);
-            view.setText(list.getTitle());
-            view.setId(this.lists.indexOf(list));
-            view.setOnClickListener(list_selection);
-            view.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-            view.setTextColor(Color.BLACK);
-            listContainer.addView(view);
-        }
-
-        newListTitle = new EditText(ListsActivity.this);
-        newListTitle.setHint(R.string.list_title);
-        newListTitle.setBackground(null);
-        newListTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
-        newListTitle.setSingleLine();
-        newListTitle.setOnEditorActionListener(submit);
-        newListTitle.setOnKeyListener(backspace_pressed);
-        listContainer.addView(newListTitle);
+    private void refreshLists(){
+        this.lists.clear();
+        this.lists.addAll(accessLists.getLists());
+        Collections.sort(lists);
+        this.recycler.notifyDataChange();
     }
+
+    @Override
+    public void onClearView(){
+        int i = 0;
+
+        for(EasyList list : this.lists) {
+            list.setCustomIndex(i++);
+            accessLists.updateList(list);
+        }
+    }
+
+    private EditText.OnEditorActionListener submit = new EditText.OnEditorActionListener(){
+        @Override
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            String title = newListTitle.getText().toString();
+
+            if (actionId == EditorInfo.IME_ACTION_DONE && !title.trim().isEmpty()) {
+                EasyList newList = new EasyList(title, lists.size());
+                accessLists.insertList(newList, lists.size());
+                newListTitle.setText("");
+
+                refreshLists();
+                return true;
+            }else{
+                newListTitle.setText("");
+                return false;
+            }
+        }
+    };
+
+    View.OnKeyListener backspace_pressed = new View.OnKeyListener() {
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
+            if(keyCode == KeyEvent.KEYCODE_DEL){
+                KeyboardUtils.hideKeyboard(ListsActivity.this);
+            }
+            return false;
+        }
+    };
 }

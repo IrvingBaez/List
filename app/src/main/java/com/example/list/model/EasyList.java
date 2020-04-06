@@ -81,25 +81,12 @@ public class EasyList implements Comparable, Parcelable {
         this.title = title;
         this.customIndex = customIndex;
         this.compareMode = CompareMode.CHRONOLOGICAL;
-        //Save to database.
     }
 
     @Override
     public int compareTo(Object o) {
         EasyList l = (EasyList)o;
-
-        switch(this.compareMode){
-            case ALPHABETICAL:
-                return this.title.compareTo(l.title);
-            case CHRONOLOGICAL:
-                return this.date.compareTo(l.date);
-            case CUSTOM:
-                if(this.customIndex < l.customIndex)
-                    return -1;
-                if(this.customIndex > l.customIndex)
-                    return 1;
-        }
-        return 0;
+        return Integer.compare(this.customIndex, l.customIndex);
     }
 
     public void sortElements(){

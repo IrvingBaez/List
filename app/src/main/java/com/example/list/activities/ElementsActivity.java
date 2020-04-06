@@ -4,16 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.list.R;
@@ -36,8 +33,7 @@ public class ElementsActivity extends AppCompatActivity
     private AccessElements accessElements;
     private GenericRecyclerView<ListElement> elementRecyclerView;
     private EditText newElementName;
-    private EditText searchText;
-    private LinearLayout searchResult;
+    private ListElement deletedElement;
 
     private Operation confirmOperation;
 
@@ -50,11 +46,6 @@ public class ElementsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_elements);
 
-        this.searchText = findViewById(R.id.activity_elements_searchText);
-        this.searchText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        this.searchText.setRawInputType(InputType.TYPE_CLASS_TEXT);
-        this.searchResult = findViewById(R.id.activity_elements_searchResult);
-
         this.elementRecyclerView = findViewById(R.id.activity_elements_container_unfinished);
         this.elementRecyclerView.setViewExample(new ElementView(this));
 
@@ -64,7 +55,7 @@ public class ElementsActivity extends AppCompatActivity
         this.newElementName.setImeOptions(EditorInfo.IME_ACTION_DONE);
         this.newElementName.setRawInputType(InputType.TYPE_CLASS_TEXT);
 
-        this.list = getIntent().getParcelableExtra("selectedList");
+        this.list = getIntent().getParcelableExtra("list");
         this.accessLists = new AccessLists(this);
         this.accessElements = new AccessElements(this);
 
@@ -76,8 +67,6 @@ public class ElementsActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        this.searchText.setVisibility(View.GONE);
-        this.searchResult.setVisibility(View.GONE);
 
         accessLists.updateInstance(list);
         this.setTitle(list.getTitle());
@@ -93,6 +82,7 @@ public class ElementsActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         ConfirmDialog confirm;
+        Intent i;
         switch (item.getItemId()){
             case R.id.menu_elements_delete:
                 this.confirmOperation = Operation.DELETE_LIST;
@@ -100,8 +90,8 @@ public class ElementsActivity extends AppCompatActivity
                 confirm.show(getSupportFragmentManager(), "confirm");
                 break;
             case R.id.menu_elements_details:
-                Intent i = new Intent(this, ListDetailsActivity.class);
-                i.putExtra("selectedList", list);
+                i = new Intent(this, ListDetailsActivity.class);
+                i.putExtra("list", list);
                 startActivity(i);
                 break;
             case R.id.menu_elements_sort_alphabetical:
@@ -132,20 +122,15 @@ public class ElementsActivity extends AppCompatActivity
                 confirm.show(getSupportFragmentManager(), "confirm");
                 break;
             case R.id.menu_elements_search:
-                this.newElementName.setVisibility(View.GONE);
-                this.elementRecyclerView.setVisibility(View.GONE);
-
-                this.searchText.setText("");
-                this.searchText.setVisibility(View.VISIBLE);
-                this.searchText.addTextChangedListener(searchText_changed);
-                this.searchText.setOnKeyListener(backspace_pressedOnSearch);
-                this.searchResult.setVisibility(View.VISIBLE);
+                i = new Intent(this, SearchActivity.class);
+                i.putExtra("list", list);
+                startActivity(i);
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onDataReordered() {
+    public void onClearView() {
         int customIndex = 0;
 
         for(ListElement element : elements){
@@ -155,10 +140,6 @@ public class ElementsActivity extends AppCompatActivity
 
         list.setCompareMode(EasyList.CompareMode.CUSTOM);
         accessLists.updateList(list);
-    }
-
-    @Override
-    public void onClearView() {
         sortData();
     }
 
@@ -244,58 +225,6 @@ public class ElementsActivity extends AppCompatActivity
         public boolean onKey(View v, int keyCode, KeyEvent event) {
             if(keyCode == KeyEvent.KEYCODE_DEL){
                 KeyboardUtils.hideKeyboard(ElementsActivity.this);
-            }
-            return false;
-        }
-    };
-
-    /**
-     * Searches the database. Should set the results.
-     */
-    TextWatcher searchText_changed = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            searchResult.removeAllViews();
-            if(searchText.getText().toString().trim().isEmpty())
-                return;
-
-            ArrayList<ListElement> result = accessElements.search(list, searchText.getText().toString());
-
-            ArrayList<ListElement> resultUnique = new ArrayList<>();
-            for(ListElement element : result){
-                if(!resultUnique.contains(element))
-                    resultUnique.add(element);
-            }
-
-            for(ListElement element : resultUnique){
-                searchResult.addView(new ElementView(ElementsActivity.this, element));
-            }
-        }
-    };
-
-    /**
-     * Detects backspace in search field.
-     */
-    View.OnKeyListener backspace_pressedOnSearch = new View.OnKeyListener() {
-        @Override
-        public boolean onKey(View v, int keyCode, KeyEvent event) {
-            if(keyCode == KeyEvent.KEYCODE_DEL){
-                KeyboardUtils.hideKeyboard(ElementsActivity.this);
-                searchText.setVisibility(View.GONE);
-                searchResult.setVisibility(View.GONE);
-
-                newElementName.setVisibility(View.VISIBLE);
-                elementRecyclerView.setVisibility(View.VISIBLE);
             }
             return false;
         }

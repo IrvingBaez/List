@@ -11,7 +11,7 @@
     <string name="description_here">Description here…</string>
     <string name="done">Done</string>
     <string name="delete">Delete</string>
-    <string name="new_list">New list</string>
+    <string name="new_list">New list…</string>
     <string name="list_title">List title…</string>
     <string name="new_element_name">New element…</string>
     <string name="delete_list">Delete list</string>
@@ -33,7 +33,23 @@
     <string name="delete_finished">Delete finished</string>
     <string name="wish_delete_finishedElements">Do you wish to delete all finished elements? This operation is permanent.</string>
     <string name="number_elements_finished">" elements finished"</string>
-    <string name="search">Search</string>
-    <string name="element_or_tags">Element or tags...</string>
-    <string name="recycle_finished">Recycle finised</string>
+    <string name="search">Search in list</string>
+    <string name="element_or_tags">Element or tags…</string>
+    <string name="recycle_finished">Recycle finished</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
 </resources>
