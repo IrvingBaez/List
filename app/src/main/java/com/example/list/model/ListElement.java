@@ -23,6 +23,7 @@ public class ListElement implements Comparable<ListElement>, Parcelable {
     private final ListElement parentElement;
     private final ArrayList<ListElement> childrenElements;
     private String[] tags;
+    private int color;
 
     protected ListElement(Parcel in) {
         id = in.readInt();
@@ -34,6 +35,7 @@ public class ListElement implements Comparable<ListElement>, Parcelable {
         parentElement = in.readParcelable(ListElement.class.getClassLoader());
         childrenElements = in.createTypedArrayList(ListElement.CREATOR);
         tags = in.createStringArray();
+        color = in.readInt();
     }
 
     public static final Creator<ListElement> CREATOR = new Creator<ListElement>() {
@@ -64,6 +66,7 @@ public class ListElement implements Comparable<ListElement>, Parcelable {
         dest.writeParcelable(parentElement, flags);
         dest.writeTypedList(childrenElements);
         dest.writeStringArray(tags);
+        dest.writeInt(color);
     }
 
     /**
@@ -77,7 +80,7 @@ public class ListElement implements Comparable<ListElement>, Parcelable {
      * @param date date the element was created.
      */
     public ListElement(int id, EasyList parent, String content, int finished, int customIndex, String date,
-                       String description, @Nullable ListElement parentElement) {
+                       String description, @Nullable ListElement parentElement, int color) {
         this.id = id;
         this.parent = parent;
         this.content = content;
@@ -87,6 +90,8 @@ public class ListElement implements Comparable<ListElement>, Parcelable {
         this.parentElement = parentElement;
         this.childrenElements = new ArrayList<>();
         this.tags = new String[]{};
+
+        this.color = color;
 
         if(parent != null)
             parent.addElement(this);
@@ -210,6 +215,14 @@ public class ListElement implements Comparable<ListElement>, Parcelable {
 
     public ListElement getParentElement() {
         return parentElement;
+    }
+
+    public void setColor(int color){
+        this.color = color;
+    }
+
+    public int getColor(){
+        return this.color;
     }
 
     @NonNull

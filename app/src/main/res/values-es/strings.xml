@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lists</string>
+    <string name="available_lists">Listas disponibles</string>
+    <string name="button_addElement">Nuevo elemento</string>
+    <string name="description">Descripción</string>
+    <string name="tags">Etiquetas</string>
+    <string name="tags_here">Etiquetas aquí…</string>
+    <string name="sub_list">Sub lista</string>
+    <string name="new_element">Nuevo elemento</string>
+    <string name="description_here">Descripción aquí…</string>
+    <string name="done">Listo</string>
+    <string name="delete">Borrar</string>
+    <string name="new_list">Nueva lista…</string>
+    <string name="list_title">Título de lita…</string>
+    <string name="new_element_name">Nuevo elemento…</string>
+    <string name="delete_list">Borrar lista</string>
+    <string name="confirm">Confirmar</string>
+    <string name="wish_delete_list">¿Desea borrar esta lista?</string>
+    <string name="wish_delete_element">¿Desea borrar este elemento?</string>
+    <string name="no">No</string>
+    <string name="yes">Sí</string>
+    <string name="delete_element">Borrar elemento</string>
+    <string name="details">Detalles</string>
+    <string name="list_name">Nombre de lista…</string>
+    <string name="new_tag">Etiqueta nueva</string>
+    <string name="tag_name">Etiqueta…</string>
+    <string name="sort">Orden</string>
+    <string name="alphabetical">Alfabético</string>
+    <string name="chronological">Cronológico</string>
+    <string name="custom">Personalizado</string>
+    <string name="settings">Configuración</string>
+    <string name="delete_finished">Borrar terminados</string>
+    <string name="wish_delete_finishedElements">¿Desea borrar todos los elementos terminados? Esta acción no puede deshacerse.</string>
+    <string name="number_elements_finished">" elementos terminados"</string>
+    <string name="search">Buscar en lista</string>
+    <string name="element_or_tags">Elemento o etiquetas…</string>
+    <string name="recycle_finished">Reciclar terminados</string>
+</resources>

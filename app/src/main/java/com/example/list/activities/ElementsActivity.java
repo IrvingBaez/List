@@ -67,6 +67,7 @@ public class ElementsActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        ElementView.setElementTextClickable(true);
 
         accessLists.updateInstance(list);
         this.setTitle(list.getTitle());

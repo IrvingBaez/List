@@ -17,6 +17,7 @@ import com.example.list.compoundComponents.ElementView;
 import com.example.list.databaseAccess.AccessElements;
 import com.example.list.model.EasyList;
 import com.example.list.model.ListElement;
+import com.example.list.util.KeyboardUtils;
 
 import java.util.ArrayList;
 
@@ -80,6 +81,7 @@ public class SearchActivity extends AppCompatActivity {
         public boolean onKey(View v, int keyCode, KeyEvent event) {
             EditText view = (EditText)v;
             if(keyCode == KeyEvent.KEYCODE_DEL && view.getText().toString().isEmpty()){
+                KeyboardUtils.hideKeyboard(SearchActivity.this);
                 SearchActivity.super.onBackPressed();
             }
             return false;

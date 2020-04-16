@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,13 +15,14 @@ import com.example.list.activities.ElementDetailsActivity;
 import com.example.list.activities.ListDetailsActivity;
 import com.example.list.databaseAccess.AccessTags;
 import com.example.list.model.EasyList;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class TagView extends LinearLayout {
     private EasyList list;
     private String tagName;
     private AppCompatActivity parent;
     private TextView nameView;
-    private Button delete;
+    private FloatingActionButton delete;
 
     View.OnClickListener delete_click = new View.OnClickListener(){
         @Override

@@ -103,9 +103,14 @@ public class AccessLists extends DatabaseAccess{
                 int customIndex = Integer.parseInt(cursor.getString(4));
                 String timeStamp = cursor.getString(5);
                 String description = cursor.getString(6);
+                int color = 0;
+
+                if(!(cursor.getString(8) == null)){
+                    color = Integer.parseInt(cursor.getString(8));
+                }
 
                 (new AccessTags(context)).setTags(new ListElement(id, parent, content,
-                        finished, customIndex, timeStamp, description, null));
+                        finished, customIndex, timeStamp, description, null, color));
             } while (cursor.moveToNext());
         }
         this.close();

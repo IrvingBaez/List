@@ -20,6 +20,12 @@ public class ListView extends GenericallyRecyclableView{
     private EasyList list;
     private AppCompatActivity parent;
 
+    private static boolean ListTextClickable = true;
+
+    public static void setListTextClickable(boolean clickable){
+        ListView.ListTextClickable = clickable;
+    }
+
     public ListView(Context context) {
         super(context);
         this.init(context);
@@ -60,9 +66,14 @@ public class ListView extends GenericallyRecyclableView{
     private View.OnClickListener list_selection = new View.OnClickListener(){
         @Override
         public void onClick(View v) {
+            if(!ListView.ListTextClickable)
+                return;
+
             Intent i = new Intent(parent, ElementsActivity.class);
             i.putExtra("list", list);
             parent.startActivity(i);
+
+            ListView.ListTextClickable = false;
         }
     };
 }

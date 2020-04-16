@@ -2,6 +2,7 @@ package com.example.list.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.KeyEvent;
@@ -50,6 +51,7 @@ public class ListsActivity extends AppCompatActivity implements GenericRecyclerV
     @Override
     protected void onResume() {
         super.onResume();
+        ListView.setListTextClickable(true);
         refreshLists();
     }
 
@@ -65,7 +67,8 @@ public class ListsActivity extends AppCompatActivity implements GenericRecyclerV
 
         switch (id){
             case R.id.menu_lists_settings:
-                //Open settings activity.
+                Intent i = new Intent(this, SettingsActivity.class);
+                startActivity(i);
                 break;
         }
 

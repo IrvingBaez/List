@@ -25,13 +25,23 @@ public class ElementView extends GenericallyRecyclableView {
 
     private CheckBox checkBox;
     private TextView TextView;
+    private static boolean elementTextClickable = true;
+
+    public static void setElementTextClickable(boolean clickable){
+        ElementView.elementTextClickable = clickable;
+    }
 
     private View.OnClickListener element_click = new View.OnClickListener(){
         @Override
         public void onClick(View sender){
+            if(!ElementView.elementTextClickable)
+                return;
+
             Intent i = new Intent(parent, ElementDetailsActivity.class);
             i.putExtra("element", element);
             parent.startActivity(i);
+
+            ElementView.elementTextClickable = false;
         }
     };
 

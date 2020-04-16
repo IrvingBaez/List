@@ -1,14 +1,23 @@
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
-    <Button
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/view_tag_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="24sp" />
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_gravity="top"
+        android:scaleType="center"
+        app:srcCompat="@android:drawable/ic_delete"
+        app:backgroundTint="@android:color/transparent"
+        app:elevation="0dp" />
 
     <TextView
         android:id="@+id/view_tag_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:textSize="24sp" />
 </merge>

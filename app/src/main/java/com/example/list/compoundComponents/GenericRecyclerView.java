@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.list.R;
+import com.example.list.model.ListElement;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -154,9 +155,13 @@ public class GenericRecyclerView<DATA> extends LinearLayout {
             ArrayList<DATA> newOrder = new ArrayList<>();
 
             for(int i = 0; i < dataList.size(); i++){
-                GenericallyRecyclableView view = (GenericallyRecyclableView) Objects.requireNonNull(recyclerView.
-                        findViewHolderForAdapterPosition(i)).itemView;
-                newOrder.add((DATA)view.getData());
+                try{
+                    GenericallyRecyclableView view = (GenericallyRecyclableView) recyclerView.
+                            findViewHolderForAdapterPosition(i).itemView;
+                    newOrder.add((DATA)view.getData());
+                }catch (NullPointerException e){
+                    System.out.println(e.getMessage());
+                }
             }
 
             dataList.clear();

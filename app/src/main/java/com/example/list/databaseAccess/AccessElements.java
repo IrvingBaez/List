@@ -44,9 +44,9 @@ public class AccessElements extends DatabaseAccess{
     public void updateElement (ListElement element) {
         //The following attributes are never to be changed: id, parent, timestamp, parentElement.
         String selectQuery = "UPDATE elements SET content = ?, state = ?, " +
-                "customIndex = ?, description = ? WHERE id = ?;";
+                "customIndex = ?, description = ?, color = ? WHERE id = ?;";
 
-        String[] selectionArgs = new String[5];
+        String[] selectionArgs = new String[6];
         selectionArgs[0] = element.getContent();
         if(element.isFinished())
             selectionArgs[1] = "1";
@@ -54,6 +54,7 @@ public class AccessElements extends DatabaseAccess{
             selectionArgs[1] = "0";
         selectionArgs[2] = String.valueOf(element.getCustomIndex());
         selectionArgs[3] = element.getDescription();
+        selectionArgs[5] = String.valueOf(element.getColor());
         selectionArgs[4] = String.valueOf(element.getId());
 
         this.open();
@@ -86,9 +87,14 @@ public class AccessElements extends DatabaseAccess{
                 int customIndex = Integer.parseInt(cursor.getString(4));
                 String timeStamp = cursor.getString(5);
                 String description = cursor.getString(6);
+                int color = 0;
+
+                if(!(cursor.getString(8) == null)){
+                    color = Integer.parseInt(cursor.getString(8));
+                }
 
                 (new AccessTags(context)).setTags(new ListElement(id, null, content,
-                        finished, customIndex, timeStamp, description, element));
+                        finished, customIndex, timeStamp, description, element, color));
             }while(cursor.moveToNext());
         }
         this.close();
@@ -118,8 +124,13 @@ public class AccessElements extends DatabaseAccess{
                 int customIndex = Integer.parseInt(cursor.getString(4));
                 String timeStamp = cursor.getString(5);
                 String description = cursor.getString(6);
+                int color = 0;
 
-                result.add(new ListElement(id, listParent, content, finished, customIndex, timeStamp, description, null));
+                if(!(cursor.getString(8) == null)){
+                    color = Integer.parseInt(cursor.getString(8));
+                }
+
+                result.add(new ListElement(id, listParent, content, finished, customIndex, timeStamp, description, null, color));
             } while (cursor.moveToNext());
 
             this.close();
@@ -142,8 +153,13 @@ public class AccessElements extends DatabaseAccess{
             String timeStamp = cursor.getString(5);
             String description = cursor.getString(6);
             ListElement elementParent = this.getElement(Integer.parseInt(cursor.getString(7)));
+            int color = 0;
 
-            result = new ListElement(id, listParent, content, finished, customIndex, timeStamp, description, elementParent);
+            if(!cursor.getString(8).equals("NULL")){
+                color = Integer.parseInt(cursor.getString(8));
+            }
+
+            result = new ListElement(id, listParent, content, finished, customIndex, timeStamp, description, elementParent, color);
         } else {
             return null;
         }

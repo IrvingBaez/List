@@ -9,16 +9,19 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.list.R;
 import com.example.list.compoundComponents.ConfirmDialog;
+import com.example.list.compoundComponents.CustomSpinnerAdapter;
 import com.example.list.compoundComponents.ElementView;
 import com.example.list.databaseAccess.AccessElements;
 import com.example.list.databaseAccess.AccessTags;
@@ -28,7 +31,8 @@ import com.example.list.util.KeyboardUtils;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-public class ElementDetailsActivity extends AppCompatActivity implements ConfirmDialog.ConfirmDialogListener {
+public class ElementDetailsActivity extends AppCompatActivity
+        implements ConfirmDialog.ConfirmDialogListener, AdapterView.OnItemSelectedListener {
     private ListElement element;
     private AccessTags accessTags;
     private AccessElements accessElements;
@@ -39,6 +43,7 @@ public class ElementDetailsActivity extends AppCompatActivity implements Confirm
     private MultiAutoCompleteTextView tags;
     private Button newElement;
     private LinearLayout subList;
+    private Spinner colorSpinner;
 
     TextWatcher title_changed = new TextWatcher() {
         int selection;
@@ -88,7 +93,17 @@ public class ElementDetailsActivity extends AppCompatActivity implements Confirm
         this.tags = findViewById(R.id.activity_element_details_tags);
         this.newElement = findViewById(R.id.activity_element_details_newElement_btn);
         this.subList = findViewById(R.id.activity_element_details_sublist);
+        this.colorSpinner = findViewById(R.id.activity_element_details_colorSpinner);
 
+        String[] colors = {"Red", "Orange", "Yellow", "Green", "Blue"};
+        int[] icons = {android.R.drawable.btn_star, android.R.drawable.btn_star,
+                android.R.drawable.btn_star, android.R.drawable.btn_star,android.R.drawable.btn_star};
+
+        CustomSpinnerAdapter customSpinnerAdapter =
+                new CustomSpinnerAdapter(getApplicationContext(), icons, colors);
+        colorSpinner.setAdapter(customSpinnerAdapter);
+
+        colorSpinner.setOnItemSelectedListener(this);
         title.addTextChangedListener(title_changed);
 
         this.fillFields();
@@ -183,5 +198,15 @@ public class ElementDetailsActivity extends AppCompatActivity implements Confirm
 
         saveTags();
         super.onBackPressed();
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }
