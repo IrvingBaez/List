@@ -20,7 +20,7 @@ import com.example.list.databaseAccess.AccessLists;
 import com.example.list.databaseAccess.AccessTags;
 import com.example.list.model.EasyList;
 
-public class ListDetailsActivity extends AppCompatActivity implements ConfirmDialog.ConfirmDialogListener {
+public class ListDetailsActivity extends AppCompatActivity implements ConfirmDialog.ConfirmDialogListener, TagView.TagViewListener {
     private EasyList list;
     private EditText listName;
     private TextView numberFinished;
@@ -28,6 +28,10 @@ public class ListDetailsActivity extends AppCompatActivity implements ConfirmDia
     private AccessTags accessTags;
     private AccessLists accessLists;
     private EditText newTagName;
+    private DeleteType deleteType;
+    private String deleting;
+
+    private enum DeleteType {DELETE_LIST, DELETE_TAG};
 
     EditText.OnEditorActionListener submit = new EditText.OnEditorActionListener() {
         @Override
@@ -91,6 +95,7 @@ public class ListDetailsActivity extends AppCompatActivity implements ConfirmDia
                 tagContainer.addView(newTagName);
                 break;
             case R.id.menu_list_details_delete:
+                this.deleteType = DeleteType.DELETE_LIST;
                 ConfirmDialog confirm = new ConfirmDialog(R.string.confirm, R.string.wish_delete_list, R.string.no, R.string.yes);
                 confirm.show(getSupportFragmentManager(), "confirm");
                 break;
@@ -103,18 +108,27 @@ public class ListDetailsActivity extends AppCompatActivity implements ConfirmDia
         tagContainer.removeAllViews();
         String[] tags = accessTags.getListTags(this.list);
 
-        for(String t : tags){
-            tagContainer.addView(new TagView(this, list, t));
+        for(String name : tags){
+            TagView tagView = new TagView(this, list, name);
+            tagView.setButtonAction(TagView.ButtonAction.TOTAL_DELETE);
+            tagContainer.addView(tagView);
         }
     }
 
     @Override
     public void onYesClicked() {
-        (new AccessLists(this)).deleteList(list);
+        switch (deleteType){
+            case DELETE_LIST:
+                (new AccessLists(this)).deleteList(list);
 
-        Intent i = new Intent(this, ListsActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(i);
+                Intent i = new Intent(this, ListsActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
+                return;
+            case DELETE_TAG:
+                (new AccessTags(this)).deleteTag(this.list, deleting);
+                this.fillTags();
+        }
     }
 
     @Override
@@ -122,5 +136,13 @@ public class ListDetailsActivity extends AppCompatActivity implements ConfirmDia
         list.setTitle(this.listName.getText().toString());
         (new AccessLists(this)).updateList(list);
         super.onBackPressed();
+    }
+
+    @Override
+    public void onButtonPressed(TagView tagView) {
+        this.deleteType = DeleteType.DELETE_TAG;
+        this.deleting = tagView.getTagName();
+        ConfirmDialog confirm = new ConfirmDialog(R.string.confirm, R.string.wish_delete_tag, R.string.no, R.string.yes);
+        confirm.show(getSupportFragmentManager(), "confirm");
     }
 }

@@ -8,6 +8,7 @@ import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -18,6 +19,7 @@ import com.example.list.compoundComponents.ConfirmDialog;
 import com.example.list.compoundComponents.GenericRecyclerView;
 import com.example.list.databaseAccess.AccessElements;
 import com.example.list.databaseAccess.AccessLists;
+import com.example.list.databaseAccess.AccessTags;
 import com.example.list.model.ListElement;
 import com.example.list.model.EasyList;
 import com.example.list.compoundComponents.ElementView;
@@ -33,6 +35,7 @@ public class ElementsActivity extends AppCompatActivity
     private AccessElements accessElements;
     private GenericRecyclerView<ListElement> elementRecyclerView;
     private EditText newElementName;
+    private int showOnlyMenuSize;
     private ListElement deletedElement;
 
     private Operation confirmOperation;
@@ -77,6 +80,17 @@ public class ElementsActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.menu_elements, menu);
+
+        SubMenu showOnlyMenu = menu.findItem(R.id.menu_elements_show_only).getSubMenu();
+        //showOnlyMenu.clear();
+
+        String[] tagNames = (new AccessTags(this)).getListTags(this.list);
+        int id = 1;
+        for(String tagName : tagNames){
+            showOnlyMenu.add(Menu.NONE, id, Menu.NONE, tagName);
+            id++;
+        }
+        this.showOnlyMenuSize = id;
         return true;
     }
 
@@ -126,6 +140,23 @@ public class ElementsActivity extends AppCompatActivity
                 i = new Intent(this, SearchActivity.class);
                 i.putExtra("list", list);
                 startActivity(i);
+                break;
+            case R.id.menu_elements_show_all:
+                this.refreshData();
+                break;
+            default:
+                if(item.getItemId() > this.showOnlyMenuSize)
+                    break;
+
+                this.refreshData();
+                String tag = item.getTitle().toString();
+                for(int j = 0; j < this.elements.size(); j++){
+                    if(!elements.get(j).hasTag(tag)){
+                        elements.remove(j);
+                        j--;
+                    }
+                }
+                this.elementRecyclerView.notifyDataChange();
         }
         return super.onOptionsItemSelected(item);
     }

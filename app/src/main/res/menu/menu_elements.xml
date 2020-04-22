@@ -24,6 +24,15 @@
     </item>
 
     <item
+        android:id="@+id/menu_elements_show_only"
+        android:title="@string/show_only" >
+        <menu>
+            <item
+                android:id="@+id/menu_elements_show_all"
+                android:title="@string/show_all" />
+        </menu>
+    </item>
+    <item
         android:id="@+id/menu_elements_recycle_finished"
         android:title="@string/recycle_finished" />
     <item

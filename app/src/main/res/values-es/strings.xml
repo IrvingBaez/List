@@ -36,4 +36,11 @@
     <string name="search">Buscar en lista</string>
     <string name="element_or_tags">Elemento o etiquetas…</string>
     <string name="recycle_finished">Reciclar terminados</string>
+    <string name="wish_delete_tag">¿Desea borrar esta etiqueta?</string>
+    <string name="color">Color</string>
+    <string name="color_example">Color ejemplo</string>
+    <string name="show_only">Mostrar sólo...</string>
+    <string name="show_all">Mostrar todo</string>
+    <string name="info">Información</string>
+    <string name="for_comments">Para comentarios, preguntas o donatiovos, contáctenos en:</string>
 </resources>

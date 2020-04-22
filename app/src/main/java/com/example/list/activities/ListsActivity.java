@@ -56,6 +56,12 @@ public class ListsActivity extends AppCompatActivity implements GenericRecyclerV
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        KeyboardUtils.hideKeyboard(this);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.menu_lists, menu);
         return true;
@@ -66,8 +72,8 @@ public class ListsActivity extends AppCompatActivity implements GenericRecyclerV
         int id = item.getItemId();
 
         switch (id){
-            case R.id.menu_lists_settings:
-                Intent i = new Intent(this, SettingsActivity.class);
+            case R.id.menu_lists_info:
+                Intent i = new Intent(this, InfoActivity.class);
                 startActivity(i);
                 break;
         }

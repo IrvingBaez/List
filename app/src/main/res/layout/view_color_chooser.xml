@@ -1,0 +1,86 @@
+<merge xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/view_color_chooser_1"
+        android:scaleType="fitCenter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/circle"
+        android:background="@android:color/transparent"
+        android:tint="@android:color/holo_green_light"
+        app:elevation="0dp"
+        app:rippleColor="@null"
+        app:backgroundTint="@null"
+        app:fabSize="mini"
+        style="?android:attr/borderlessButtonStyle" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/view_color_chooser_2"
+        android:scaleType="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/circle"
+        android:background="@android:color/transparent"
+        app:elevation="0dp"
+        app:rippleColor="@null"
+        app:backgroundTint="@null"
+        app:fabSize="mini"
+        style="?android:attr/borderlessButtonStyle" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/view_color_chooser_3"
+        android:scaleType="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/circle"
+        android:background="@android:color/transparent"
+        app:elevation="0dp"
+        app:rippleColor="@null"
+        app:backgroundTint="@null"
+        app:fabSize="mini"
+        style="?android:attr/borderlessButtonStyle" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/view_color_chooser_4"
+        android:scaleType="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/circle"
+        android:background="@android:color/transparent"
+        app:elevation="0dp"
+        app:rippleColor="@null"
+        app:backgroundTint="@null"
+        app:fabSize="mini"
+        style="?android:attr/borderlessButtonStyle" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/view_color_chooser_5"
+        android:scaleType="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/circle"
+        android:background="@android:color/transparent"
+        app:elevation="0dp"
+        app:rippleColor="@null"
+        app:backgroundTint="@null"
+        app:fabSize="mini"
+        style="?android:attr/borderlessButtonStyle" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/view_color_chooser_6"
+        android:scaleType="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/circle"
+        android:background="@android:color/transparent"
+        app:elevation="0dp"
+        app:rippleColor="@null"
+        app:backgroundTint="@null"
+        app:fabSize="mini"
+        style="?android:attr/borderlessButtonStyle" />
+</merge>

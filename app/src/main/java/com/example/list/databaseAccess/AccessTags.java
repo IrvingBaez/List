@@ -35,6 +35,39 @@ public class AccessTags extends DatabaseAccess{
         return t;
     }
 
+    public void addTag(ListElement element, String tag) {
+        this.open();
+        int tagId;
+
+        String selectQuery = "SELECT id FROM tags WHERE name = ? AND list = ?";
+        String[] selectionArgs = new String[]{tag, String.valueOf(element.getParent().getId())};
+        cursor = db.rawQuery(selectQuery, selectionArgs);
+
+        if (cursor.moveToFirst()) {
+            tagId = Integer.parseInt(cursor.getString(0));
+        }else{
+            selectQuery = "INSERT INTO tags (list, name) VALUES (?, ?);";
+            selectionArgs = new String[]{String.valueOf(element.getParent().getId()), tag};
+            this.open();
+            db.execSQL(selectQuery, selectionArgs);
+
+            cursor = db.rawQuery("SELECT max(id) FROM tags;", null);
+            cursor.moveToFirst();
+            tagId = Integer.parseInt(cursor.getString(0));
+        }
+
+        selectQuery = "INSERT INTO element_tags (element, tag) VALUES (?, ?);";
+        selectionArgs = new String[2];
+
+
+        selectionArgs[0] = String.valueOf(element.getId());
+        selectionArgs[1] = String.valueOf(tagId);
+
+        db.execSQL(selectQuery, selectionArgs);
+
+        this.close();
+    }
+
     public void insertTag(ListElement element, String[] tags) {
         //Erasing tags from element
         String selectQuery = "DELETE FROM element_tags WHERE element = ?;";
@@ -122,7 +155,7 @@ public class AccessTags extends DatabaseAccess{
         return tagArray;
     }
 
-    void setTags(ListElement element){
+    public void setTags(ListElement element){
         element.setTags(getElementTagsFromDB(element));
     }
 
@@ -144,6 +177,30 @@ public class AccessTags extends DatabaseAccess{
         db.execSQL(selectQuery, selectionArgs);
 
         selectQuery = "DELETE FROM tags WHERE id = ?";
+        db.execSQL(selectQuery, selectionArgs);
+
+        this.close();
+    }
+
+    public void deleteTag(ListElement element, String tagName){
+        this.open();
+
+        int tagId;
+        String selectQuery = "SELECT id FROM tags WHERE name = ? AND list = ?";
+        String[] selectionArgs = new String[]{tagName, String.valueOf(element.getParent().getId())};
+        cursor = db.rawQuery(selectQuery, selectionArgs);
+
+        if(cursor.moveToFirst())
+            tagId = Integer.parseInt(cursor.getString(0));
+        else
+            return;
+
+        selectQuery = "DELETE FROM element_tags WHERE tag = ? AND element = ?";
+        selectionArgs = new String[2];
+
+        selectionArgs[0] = String.valueOf(tagId);
+        selectionArgs[1] = String.valueOf(element.getId());
+
         db.execSQL(selectQuery, selectionArgs);
 
         this.close();

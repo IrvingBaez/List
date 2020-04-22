@@ -1,38 +1,37 @@
 package com.example.list.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.MultiAutoCompleteTextView;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.example.list.R;
+import com.example.list.compoundComponents.ColorChooser;
 import com.example.list.compoundComponents.ConfirmDialog;
-import com.example.list.compoundComponents.CustomSpinnerAdapter;
 import com.example.list.compoundComponents.ElementView;
+import com.example.list.compoundComponents.TagView;
 import com.example.list.databaseAccess.AccessElements;
 import com.example.list.databaseAccess.AccessTags;
 import com.example.list.model.ListElement;
 import com.example.list.util.KeyboardUtils;
 
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 public class ElementDetailsActivity extends AppCompatActivity
-        implements ConfirmDialog.ConfirmDialogListener, AdapterView.OnItemSelectedListener {
+        implements ConfirmDialog.ConfirmDialogListener, TagView.TagViewListener {
     private ListElement element;
     private AccessTags accessTags;
     private AccessElements accessElements;
@@ -40,10 +39,13 @@ public class ElementDetailsActivity extends AppCompatActivity
     private EditText title;
     private CheckBox checkBox;
     private EditText description;
-    private MultiAutoCompleteTextView tags;
+    private EditText newTags;
+    private LinearLayout tags;
+    private TextView colorLabel;
+    private ColorChooser chooser;
+    private TextView subListLabel;
     private Button newElement;
     private LinearLayout subList;
-    private Spinner colorSpinner;
 
     TextWatcher title_changed = new TextWatcher() {
         int selection;
@@ -69,13 +71,6 @@ public class ElementDetailsActivity extends AppCompatActivity
         }
     };
 
-    View.OnClickListener newElement_click = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            //Create new element.
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,21 +85,24 @@ public class ElementDetailsActivity extends AppCompatActivity
         this.title = findViewById(R.id.activity_element_details_name);
         this.checkBox = findViewById(R.id.activity_element_details_checkbox);
         this.description = findViewById(R.id.activity_element_details_description);
-        this.tags = findViewById(R.id.activity_element_details_tags);
+        this.newTags = findViewById(R.id.activity_element_details_tags);
+        this.tags = findViewById(R.id.activity_element_details_tags_view);
+        this.colorLabel = findViewById(R.id.activity_element_details_colorLabel);
+        this.chooser = findViewById(R.id.activity_element_details_colorChooser);
+        this.subListLabel = findViewById(R.id.activity_element_details_sublist_lbl);
         this.newElement = findViewById(R.id.activity_element_details_newElement_btn);
         this.subList = findViewById(R.id.activity_element_details_sublist);
-        this.colorSpinner = findViewById(R.id.activity_element_details_colorSpinner);
 
-        String[] colors = {"Red", "Orange", "Yellow", "Green", "Blue"};
-        int[] icons = {android.R.drawable.btn_star, android.R.drawable.btn_star,
-                android.R.drawable.btn_star, android.R.drawable.btn_star,android.R.drawable.btn_star};
+        //To later addition.
+        colorLabel.setVisibility(View.GONE);
+        chooser.setVisibility(View.GONE);
+        subListLabel.setVisibility(View.GONE);
+        newElement.setVisibility(View.GONE);
+        subList.setVisibility(View.GONE);
 
-        CustomSpinnerAdapter customSpinnerAdapter =
-                new CustomSpinnerAdapter(getApplicationContext(), icons, colors);
-        colorSpinner.setAdapter(customSpinnerAdapter);
-
-        colorSpinner.setOnItemSelectedListener(this);
         title.addTextChangedListener(title_changed);
+        newTags.setSingleLine();
+        newTags.setOnEditorActionListener(tag_submit);
 
         this.fillFields();
     }
@@ -135,53 +133,52 @@ public class ElementDetailsActivity extends AppCompatActivity
         this.checkBox.setChecked(this.element.isFinished());
         this.description.setText(this.element.getDescription());
 
-        //Filling MultiAutoCompleteTextView Text
-        String registeredTags = "";
-        for(String s : element.getTags()){
-            registeredTags += s + ", ";
-        }
-        this.tags.setText(registeredTags);
+        //Filling tags.
+        this.tags.removeAllViews();
 
-        //Filling MultiAutoCompleteTextView Suggestions
-        String[] listTags = accessTags.getListTags(this.element.getParent());
-        ArrayAdapter<String> adapter;
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listTags);
-        tags.setAdapter(adapter);
-        tags.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+        ArrayList<String> elementTags = new ArrayList<>();
+        for(String tag : this.element.getTags()){
+            elementTags.add(tag);
+            TagView tagView = new TagView(this, element, tag);
+            tagView.setButtonAction(TagView.ButtonAction.DELETE);
+            this.tags.addView(tagView);
+        }
+
+        for(String tag : accessTags.getListTags(element.getParent())){
+            if(!elementTags.contains(tag)){
+                TagView tagView = new TagView(this, element, tag);
+                tagView.setButtonAction(TagView.ButtonAction.ADD);
+                this.tags.addView(tagView);
+            }
+        }
 
         //Filling sublist.
         accessElements.setChildrenToElement(this.element);
         for(ListElement e : this.element.getChildrenElements()){
             this.subList.addView(new ElementView(this, e));
         }
-
-        //Listeners
-        this.newElement.setOnClickListener(newElement_click);
     }
 
-    private void saveTags(){
-        StringTokenizer tokenizer = new StringTokenizer(this.tags.getText().toString(), ",");
-        ArrayList<String> tagList = new ArrayList<>();
+    EditText.OnEditorActionListener tag_submit = new EditText.OnEditorActionListener() {
+        @Override
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            if(actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE){
+                String tag = newTags.getText().toString().trim();
 
-        while(tokenizer.hasMoreTokens()){
-            String tag = tokenizer.nextToken();
-            tag = tag.replace('\n', '\0').replace(',', '\0').trim();
-            tagList.add(tag);
+                if(!tag.isEmpty()) {
+                    accessTags.addTag(element, tag);
+                    accessTags.setTags(element);
+                    ElementDetailsActivity.this.fillFields();
+
+                    newTags.setText("");
+                    KeyboardUtils.hideKeyboard(ElementDetailsActivity.this);
+                    return true;
+                }
+            }
+
+            return false;
         }
-
-        ArrayList<String> uniqueTags = new ArrayList<>();
-        for(String s : tagList){
-            if(!uniqueTags.contains(s) && s.length() > 0)
-                uniqueTags.add(s);
-        }
-
-        String[] tagArray = new String[uniqueTags.size()];
-        for(int i = 0; i < uniqueTags.size(); i++){
-            tagArray[i] = uniqueTags.get(i);
-        }
-
-        accessTags.insertTag(this.element, tagArray);
-    }
+    };
 
     @Override
     public void onYesClicked() {
@@ -196,17 +193,12 @@ public class ElementDetailsActivity extends AppCompatActivity
         element.setDescription(description.getText().toString());
         accessElements.updateElement(element);
 
-        saveTags();
         super.onBackPressed();
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
+    public void onButtonPressed(TagView tagView) {
+        accessTags.setTags(this.element);
+        this.fillFields();
     }
 }

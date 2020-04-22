@@ -201,6 +201,15 @@ public class ListElement implements Comparable<ListElement>, Parcelable {
         this.tags = tags;
     }
 
+    public boolean hasTag(String tag){
+        for(int i = 0; i < tags.length; i++){
+            if(tags[i].equals(tag)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void addChildElement(ListElement child){
         this.childrenElements.add(child);
     }

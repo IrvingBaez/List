@@ -55,4 +55,9 @@
     <string name="wish_delete_tag">Do you wish to delete this tag?</string>
     <string name="color">Color</string>
     <string name="color_example">Color example</string>
+    <string name="show_only">Show only...</string>
+    <string name="show_all">Show all</string>
+    <string name="info">Information</string>
+    <string name="for_comments">For comments, questions or donations contact us at:</string>
+    <string name="company_email" translatable="false">myCompanyEmail@gmail.com</string>
 </resources>

@@ -63,21 +63,6 @@ tools:context=".activities.ElementDetailsActivity">
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/activity_element_details_name" />
 
-        <MultiAutoCompleteTextView
-            android:id="@+id/activity_element_details_tags"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="24dp"
-            android:completionThreshold="1"
-            android:hint="@string/tags_here"
-            android:inputType="textMultiLine"
-            android:singleLine="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/activity_element_details_tags_lbl" />
-
         <TextView
             android:id="@+id/activity_element_details_tags_lbl"
             android:layout_width="wrap_content"
@@ -89,26 +74,53 @@ tools:context=".activities.ElementDetailsActivity">
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/activity_element_details_description" />
 
+        <EditText
+            android:id="@+id/activity_element_details_tags"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:hint="@string/new_tag"
+            android:inputType="text"
+            android:singleLine="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/activity_element_details_tags_lbl"
+            android:autofillHints="" />
+
+        <LinearLayout
+            android:id="@+id/activity_element_details_tags_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/activity_element_details_tags" />
+
         <TextView
-            android:id="@+id/activity_elements_details_colorLable"
+            android:id="@+id/activity_element_details_colorLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="32dp"
             android:text="@string/color"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/activity_element_details_tags" />
+            app:layout_constraintTop_toBottomOf="@+id/activity_element_details_tags_view" />
 
-        <Spinner
-            android:id="@+id/activity_element_details_colorSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
+        <com.example.list.compoundComponents.ColorChooser
+            android:id="@+id/activity_element_details_colorChooser"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
             android:layout_marginEnd="24dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/activity_elements_details_colorLable" />
+            app:layout_constraintStart_toEndOf="@+id/activity_element_details_colorLabel"
+            app:layout_constraintTop_toBottomOf="@+id/activity_element_details_tags_view" />
 
         <TextView
             android:id="@+id/activity_element_details_sublist_lbl"
@@ -119,7 +131,7 @@ tools:context=".activities.ElementDetailsActivity">
             android:text="@string/sub_list"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/activity_element_details_colorSpinner" />
+            app:layout_constraintTop_toBottomOf="@+id/activity_element_details_colorChooser" />
 
         <Button
             android:id="@+id/activity_element_details_newElement_btn"
@@ -127,15 +139,13 @@ tools:context=".activities.ElementDetailsActivity">
             android:layout_height="0dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginBottom="8dp"
             android:minWidth="0dp"
             android:minHeight="0dp"
             android:text="@string/new_element"
             android:textAlignment="center"
             android:textAllCaps="false"
-            app:layout_constraintBottom_toTopOf="@+id/activity_element_details_sublist"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/activity_element_details_colorSpinner" />
+            app:layout_constraintTop_toBottomOf="@+id/activity_element_details_colorChooser" />
 
         <LinearLayout
             android:id="@+id/activity_element_details_sublist"
